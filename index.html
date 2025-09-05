@@ -2,6 +2,36 @@
 <html>
 <head>
   <title>Nuh Uh</title>
+  <style>
+    /* Make the body fill the viewport and center content */
+    body {
+      margin: 0;
+      height: 100vh; /* full height */
+      display: flex;
+      justify-content: center; /* horizontal center */
+      align-items: center;     /* vertical center */
+      background-color: #000;  /* black background for contrast */
+      font-family: Arial, sans-serif;
+    }
+
+    /* The text styling */
+    h1 {
+      font-size: 5rem;
+      animation: rainbow 5s linear infinite;
+      user-select: none;
+    }
+
+    /* Rainbow color animation */
+    @keyframes rainbow {
+      0%   { color: red; }
+      16%  { color: orange; }
+      33%  { color: yellow; }
+      50%  { color: green; }
+      66%  { color: blue; }
+      83%  { color: indigo; }
+      100% { color: violet; }
+    }
+  </style>
 </head>
 <body>
   <h1>nuh uh</h1>
