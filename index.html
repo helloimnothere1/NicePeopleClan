@@ -10,7 +10,7 @@
     }
 
     html, body {
-      height: 200vh; /* Two scrollable full-screen sections */
+      height: 200vh;
       font-family: Arial, sans-serif;
     }
 
@@ -22,13 +22,14 @@
       background-color: #000;
       border: 10px solid red;
       animation: rainbowBorder 5s linear infinite;
-      scrollbar-width: none;         /* Firefox */
-      -ms-overflow-style: none;      /* IE and Edge */
-      overflow-y: scroll;            /* Keep scroll working without shifting layout */
+      overflow-y: scroll;
+
+      scrollbar-width: none;        /* Firefox */
+      -ms-overflow-style: none;    /* IE and Edge */
     }
 
     body::-webkit-scrollbar {
-      display: none;                 /* Chrome, Safari */
+      display: none;               /* Chrome, Safari */
     }
 
     section {
@@ -37,6 +38,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
     h1 {
@@ -45,6 +47,7 @@
       user-select: none;
     }
 
+    /* Rainbow text animation */
     @keyframes rainbow {
       0%   { color: red; }
       16.6%  { color: orange; }
@@ -55,6 +58,7 @@
       100% { color: red; }
     }
 
+    /* Rainbow border animation */
     @keyframes rainbowBorder {
       0%   { border-color: red; }
       16.6%  { border-color: orange; }
@@ -64,14 +68,27 @@
       83.3%  { border-color: indigo; }
       100% { border-color: red; }
     }
+
+    /* Middle border between sections */
+    .middle-border {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background-color: red;
+      animation: rainbowBorder 5s linear infinite;
+      z-index: 10;
+    }
   </style>
 </head>
 <body>
   <section>
     <h1>nuh uh</h1>
+    <div class="middle-border"></div>
   </section>
   <section>
-    <h1>i still said nuh uh</h1>
+    <h1>yuh huh lil bro</h1>
   </section>
 </body>
 </html>
