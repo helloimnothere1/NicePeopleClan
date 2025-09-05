@@ -47,7 +47,7 @@
       user-select: none;
     }
 
-    /* Rainbow text animation */
+    /* Rainbow text and border animation */
     @keyframes rainbow {
       0%   { color: red; }
       16.6%  { color: orange; }
@@ -58,15 +58,14 @@
       100% { color: red; }
     }
 
-    /* Rainbow border animation */
     @keyframes rainbowBorder {
-      0%   { border-color: red; }
-      16.6%  { border-color: orange; }
-      33.3%  { border-color: yellow; }
-      50%  { border-color: green; }
-      66.6%  { border-color: blue; }
-      83.3%  { border-color: indigo; }
-      100% { border-color: red; }
+      0%   { border-color: red; background-color: red; }
+      16.6%  { border-color: orange; background-color: orange; }
+      33.3%  { border-color: yellow; background-color: yellow; }
+      50%  { border-color: green; background-color: green; }
+      66.6%  { border-color: blue; background-color: blue; }
+      83.3%  { border-color: indigo; background-color: indigo; }
+      100% { border-color: red; background-color: red; }
     }
 
     /* Middle border between sections */
@@ -75,7 +74,7 @@
       bottom: 0;
       left: 0;
       width: 100%;
-      height: 5px;
+      height: 10px; /* Match outer border thickness */
       background-color: red;
       animation: rainbowBorder 5s linear infinite;
       z-index: 10;
@@ -88,7 +87,7 @@
     <div class="middle-border"></div>
   </section>
   <section>
-    <h1>yuh huh lil bro</h1>
+    <h1>yuh huh lil broa</h1>
   </section>
 </body>
 </html>
