@@ -3,33 +3,30 @@
 <head>
   <title>Nuh Uh</title>
   <style>
-    /* Make the body fill the viewport and center content */
     body {
       margin: 0;
-      height: 100vh; /* full height */
+      height: 100vh;
       display: flex;
-      justify-content: center; /* horizontal center */
-      align-items: center;     /* vertical center */
-      background-color: #000;  /* black background for contrast */
+      justify-content: center;
+      align-items: center;
+      background-color: #000;
       font-family: Arial, sans-serif;
     }
 
-    /* The text styling */
     h1 {
       font-size: 5rem;
       animation: rainbow 5s linear infinite;
       user-select: none;
     }
 
-    /* Rainbow color animation */
     @keyframes rainbow {
       0%   { color: red; }
-      16%  { color: orange; }
-      33%  { color: yellow; }
+      16.6%  { color: orange; }
+      33.3%  { color: yellow; }
       50%  { color: green; }
-      66%  { color: blue; }
-      83%  { color: indigo; }
-      100% { color: violet; }
+      66.6%  { color: blue; }
+      83.3%  { color: indigo; }
+      100% { color: red; }
     }
   </style>
 </head>
