@@ -3,24 +3,18 @@
 <head>
   <title>Clicker Game</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body { height: 300vh; font-family: Arial, sans-serif; }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      background-color: black;
-      border: 10px solid red;
-      animation: rainbowBorder 5s linear infinite;
-      overflow-y: scroll;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    body::-webkit-scrollbar { display: none; }
+    body {
+      font-family: Arial, sans-serif;
+      background: black;
+      color: white;
+      overflow-x: hidden;
+    }
 
     section {
       height: 100vh;
@@ -30,151 +24,176 @@
       justify-content: center;
       align-items: center;
       position: relative;
-      gap: 30px;
     }
 
     h1 {
       font-size: 4rem;
       animation: rainbowText 5s linear infinite;
-      user-select: none;
-      text-align: center;
-    }
-
-    #counter {
-      font-size: 3rem;
-      color: white;
-      animation: rainbowText 5s linear infinite;
     }
 
     button {
       padding: 20px 40px;
-      font-size: 1.8rem;
-      font-weight: bold;
+      margin-top: 20px;
+      font-size: 1.5rem;
+      background: red;
       color: white;
-      background: black;
-      border: 4px solid red;
-      border-radius: 12px;
+      border: none;
       cursor: pointer;
-      animation: rainbowBorder 5s linear infinite;
-      transition: transform 0.2s ease-in-out, background 0.2s;
+      border-radius: 0; /* rectangle */
+      position: relative;
+      z-index: 10;
     }
 
-    button:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
-
-    .middle-border {
+    /* rainbow divider */
+    .divider {
       position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
       height: 10px;
-      background-color: red;
       animation: rainbowDivider 5s linear infinite;
-      z-index: 10;
     }
 
-    .autoclicker-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .autoclicker {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-    }
-
-    .autoclicker img {
-      width: 60px;
-      height: 60px;
-      transition: transform 0.1s;
-    }
-
-    .autoclicker:hover img { transform: scale(1.1); }
-
-    /* Rainbow animations */
+    /* rainbow animations */
     @keyframes rainbowText {
-      0% { color: red; } 16.6% { color: orange; } 33.3% { color: yellow; } 50% { color: green; }
-      66.6% { color: blue; } 83.3% { color: indigo; } 100% { color: red; }
-    }
-
-    @keyframes rainbowBorder {
-      0% { border-color: red; } 16.6% { border-color: orange; } 33.3% { border-color: yellow; } 50% { border-color: green; }
-      66.6% { border-color: blue; } 83.3% { border-color: indigo; } 100% { border-color: red; }
+      0% { color: red; }
+      16.6% { color: orange; }
+      33.3% { color: yellow; }
+      50% { color: green; }
+      66.6% { color: blue; }
+      83.3% { color: indigo; }
+      100% { color: red; }
     }
 
     @keyframes rainbowDivider {
-      0% { background-color: red; } 16.6% { background-color: orange; } 33.3% { background-color: yellow; } 50% { background-color: green; }
-      66.6% { background-color: blue; } 83.3% { background-color: indigo; } 100% { background-color: red; }
+      0% { background: red; }
+      16.6% { background: orange; }
+      33.3% { background: yellow; }
+      50% { background: green; }
+      66.6% { background: blue; }
+      83.3% { background: indigo; }
+      100% { background: red; }
     }
 
+    /* counter style */
+    #counter {
+      font-size: 3rem;
+      margin-top: 20px;
+      animation: rainbowText 5s linear infinite;
+      position: relative;
+    }
+
+    /* dps display */
+    #dps {
+      font-size: 1.5rem;
+      margin-top: 10px;
+      animation: rainbowText 5s linear infinite;
+      display: none; /* hidden until first autoclicker */
+    }
+
+    /* floating +1 animation style */
+    .plus1 {
+      position: absolute;
+      color: white;
+      font-size: 1.2rem;
+      animation: floatUp 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    @keyframes floatUp {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(-50px); }
+    }
   </style>
 </head>
 <body>
   <!-- Page 1 -->
   <section>
-    <h1>Welcome to Clicker Game</h1>
+    <h1>Welcome to the Clicker Game!</h1>
+    <div class="divider"></div>
   </section>
 
-  <!-- Page 2 -->
+  <!-- Page 2 (Clicker) -->
   <section>
-    <h1>Manual Clicker</h1>
     <h1 id="counter">0</h1>
-    <button id="clickButton">Click Me</button>
-    <div class="middle-border"></div>
+    <button id="button">Click Me</button>
+    <button id="buyAutoclicker">Buy Autoclicker (Cost: 100)</button>
+    <div id="dps">+0 /s</div>
+    <div class="divider"></div>
   </section>
 
   <!-- Page 3 -->
   <section>
-    <h1>Auto Clickers</h1>
-    <div class="autoclicker-container">
-      <!-- First auto-clicker: mouse PNG -->
-      <div class="autoclicker" id="mouse1">
-        <img src="https://i.imgur.com/0qVdUnp.png" alt="Mouse">
-        <button>Buy Mouse (Cost: <span id="mouse1Cost">100</span>)</button>
-      </div>
-    </div>
+    <h1>Autoclicker Upgrades Coming Soon...</h1>
   </section>
 
   <script>
     let count = 0;
-    let counter = document.getElementById('counter');
-    let clickButton = document.getElementById('clickButton');
+    let autoclickerCost = 100;
+    let autoclickers = 0;
+    const counter = document.getElementById('counter');
+    const button = document.getElementById('button');
+    const buyButton = document.getElementById('buyAutoclicker');
+    const dpsDisplay = document.getElementById('dps');
 
-    clickButton.addEventListener('click', () => {
-      count++;
-      counter.textContent = Math.floor(count);
+    // Manual click
+    button.addEventListener('click', () => {
+      addClick(1);
     });
 
-    // Auto-clickers
-    const mouse1 = document.getElementById('mouse1');
-    const mouse1Btn = mouse1.querySelector('button');
-    const mouse1CostSpan = document.getElementById('mouse1Cost');
+    // Buy autoclickers
+    buyButton.addEventListener('click', () => {
+      if (count >= autoclickerCost) {
+        count -= autoclickerCost;
+        counter.textContent = count;
 
-    let mouse1Count = 0;
-    let mouse1Cost = 100;
+        autoclickers++;
 
-    let mouseIntervals = [];
+        // show DPS text if first autoclicker
+        if (autoclickers === 1) {
+          dpsDisplay.style.display = 'block';
+        }
 
-    mouse1Btn.addEventListener('click', () => {
-      if(count >= mouse1Cost){
-        count -= mouse1Cost;
-        counter.textContent = Math.floor(count);
-        mouse1Count++;
-        mouse1Cost = Math.ceil(mouse1Cost * 1.2);
-        mouse1CostSpan.textContent = mouse1Cost;
+        // update DPS text
+        dpsDisplay.textContent = `+${autoclickers} /s`;
 
-        // Add an auto-clicker interval that clicks the manual button
-        const interval = setInterval(() => {
-          clickButton.click(); // simulates the mouse clicking
-        }, 1000);
-        mouseIntervals.push(interval);
+        // increase cost
+        autoclickerCost = Math.floor(autoclickerCost * 1.2);
+        buyButton.textContent = `Buy Autoclicker (Cost: ${autoclickerCost})`;
+
+        // create a new autoclicker with its own interval
+        startAutoclicker();
       }
     });
+
+    // Function to add clicks and show +1 animation
+    function addClick(amount) {
+      count += amount;
+      counter.textContent = count;
+
+      // floating +1 effect
+      const plus = document.createElement('div');
+      plus.textContent = `+${amount}`;
+      plus.classList.add('plus1');
+
+      const rect = button.getBoundingClientRect();
+      plus.style.left = rect.left + rect.width / 2 - 10 + 'px';
+      plus.style.top = rect.top - 20 + 'px';
+      document.body.appendChild(plus);
+
+      setTimeout(() => plus.remove(), 1000);
+    }
+
+    // Start one autoclicker with a slightly random offset
+    function startAutoclicker() {
+      const delay = Math.random() * 1000; // random offset up to 1s
+      setTimeout(() => {
+        setInterval(() => {
+          addClick(1);
+        }, 1000);
+      }, delay);
+    }
   </script>
 </body>
 </html>
