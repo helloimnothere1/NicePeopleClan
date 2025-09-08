@@ -1,199 +1,304 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Clicker Game</title>
+  <title>Rainbow Clicker</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: sans-serif;
       background: black;
       color: white;
-      overflow-x: hidden;
+      border: 10px solid red;
+      animation: bodyBorderRainbow 5s linear infinite;
+    }
+
+    @keyframes bodyBorderRainbow {
+      0%   { border-color: hsl(0, 100%, 50%); }
+      16.6%  { border-color: hsl(60, 100%, 50%); }
+      33.3%  { border-color: hsl(120, 100%, 50%); }
+      50%  { border-color: hsl(180, 100%, 50%); }
+      66.6%  { border-color: hsl(240, 100%, 50%); }
+      83.3%  { border-color: hsl(300, 100%, 50%); }
+      100% { border-color: hsl(360, 100%, 50%); }
     }
 
     section {
       height: 100vh;
-      width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      position: relative;
     }
 
-    h1 {
-      font-size: 4rem;
-      animation: rainbowText 5s linear infinite;
+    h1 { font-size: 3rem; margin: 10px 0; }
+
+    #clickButton, .shop button, .upgradeShop button {
+      background: red;
+      border: 5px solid;
+      border-radius: 15px;
+      color: white;
+      font-size: 18px;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin: 10px 0;
+      animation: borderRainbow 3s linear infinite;
+      min-width: 150px;
     }
 
-    button {
-      padding: 20px 40px;
-      margin-top: 20px;
-      font-size: 1.5rem;
+    @keyframes borderRainbow {
+      0%   { border-color: hsl(0, 100%, 50%); }
+      16.6%  { border-color: hsl(60, 100%, 50%); }
+      33.3%  { border-color: hsl(120, 100%, 50%); }
+      50%  { border-color: hsl(180, 100%, 50%); }
+      66.6%  { border-color: hsl(240, 100%, 50%); }
+      83.3%  { border-color: hsl(300, 100%, 50%); }
+      100% { border-color: hsl(360, 100%, 50%); }
+    }
+
+    #startButton {
       background: red;
       color: white;
-      border: none;
+      font-size: 2.5rem;
+      padding: 20px 40px;
+      border: 5px solid white;
+      border-radius: 15px;
       cursor: pointer;
-      border-radius: 0; /* rectangle */
-      position: relative;
-      z-index: 10;
+      animation: borderRainbow 3s linear infinite;
     }
 
-    /* rainbow divider */
     .divider {
-      position: absolute;
-      bottom: 0;
-      left: 0;
       width: 100%;
       height: 10px;
-      animation: rainbowDivider 5s linear infinite;
+      animation: bodyBorderRainbow 5s linear infinite; /* sync with body border */
     }
 
-    /* rainbow animations */
-    @keyframes rainbowText {
-      0% { color: red; }
-      16.6% { color: orange; }
-      33.3% { color: yellow; }
-      50% { color: green; }
-      66.6% { color: blue; }
-      83.3% { color: indigo; }
-      100% { color: red; }
+    #page3, #page4 {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    @keyframes rainbowDivider {
-      0% { background: red; }
-      16.6% { background: orange; }
-      33.3% { background: yellow; }
-      50% { background: green; }
-      66.6% { background: blue; }
-      83.3% { background: indigo; }
-      100% { background: red; }
+    .shop, .upgradeShop {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 10px 0;
+      width: 80%;
     }
 
-    /* counter style */
-    #counter {
-      font-size: 3rem;
-      margin-top: 20px;
-      animation: rainbowText 5s linear infinite;
-      position: relative;
+    .shop button, .upgradeShop button {
+      flex: 1 1 150px;
+      margin: 5px;
     }
 
-    /* dps display */
     #dps {
-      font-size: 1.5rem;
+      font-size: 2rem;
+      display: none;
       margin-top: 10px;
       animation: rainbowText 5s linear infinite;
-      display: none; /* hidden until first autoclicker */
     }
 
-    /* floating +1 animation style */
+    @keyframes rainbowText {
+      0% { color: hsl(0, 100%, 50%); }
+      16% { color: hsl(60, 100%, 50%); }
+      33% { color: hsl(120, 100%, 50%); }
+      50% { color: hsl(180, 100%, 50%); }
+      66% { color: hsl(240, 100%, 50%); }
+      83% { color: hsl(300, 100%, 50%); }
+      100% { color: hsl(360, 100%, 50%); }
+    }
+
     .plus1 {
       position: absolute;
-      color: white;
-      font-size: 1.2rem;
+      font-size: 20px;
       animation: floatUp 1s ease-out forwards;
+      color: yellow;
       pointer-events: none;
-      z-index: 1000;
     }
 
     @keyframes floatUp {
       from { opacity: 1; transform: translateY(0); }
-      to   { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 0; transform: translateY(-50px); }
     }
+
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <!-- Page 1 -->
-  <section>
-    <h1>Welcome to the Clicker Game!</h1>
-    <div class="divider"></div>
+  <section id="page1">
+    <h1>Welcome!</h1>
+    <button id="startButton">Start Game</button>
   </section>
 
-  <!-- Page 2 (Clicker) -->
-  <section>
+  <div class="divider hidden" id="divider2"></div>
+
+  <!-- Page 2 -->
+  <section id="page2" class="hidden">
     <h1 id="counter">0</h1>
-    <button id="button">Click Me</button>
-    <button id="buyAutoclicker">Buy Autoclicker (Cost: 100)</button>
-    <div id="dps">+0 /s</div>
-    <div class="divider"></div>
+    <button id="clickButton">Click Me</button>
+    <div id="dps"></div>
   </section>
 
-  <!-- Page 3 -->
-  <section>
-    <h1>Autoclicker Upgrades Coming Soon...</h1>
+  <div class="divider hidden" id="divider3"></div>
+
+  <!-- Page 3: Buildings -->
+  <section id="page3" class="hidden">
+    <h1>Buildings</h1>
+    <div class="shop" id="shop"></div>
+  </section>
+
+  <div class="divider hidden" id="divider4"></div>
+
+  <!-- Page 4: Upgrades -->
+  <section id="page4" class="hidden">
+    <h1>Upgrades</h1>
+    <div class="upgradeShop" id="upgrades"></div>
   </section>
 
   <script>
     let count = 0;
-    let autoclickerCost = 100;
-    let autoclickers = 0;
+    let clickPower = 1;
+
     const counter = document.getElementById('counter');
-    const button = document.getElementById('button');
-    const buyButton = document.getElementById('buyAutoclicker');
+    const clickButton = document.getElementById('clickButton');
     const dpsDisplay = document.getElementById('dps');
+    const shop = document.getElementById('shop');
+    const upgradesShop = document.getElementById('upgrades');
+    const startButton = document.getElementById('startButton');
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const page3 = document.getElementById('page3');
+    const page4 = document.getElementById('page4');
 
-    // Manual click
-    button.addEventListener('click', () => {
-      addClick(1);
+    const buildings = [
+      { name: "Autoclicker", baseCost: 100, cps: 1, owned: 0 },
+      { name: "Grandpa", baseCost: 1000, cps: 5, owned: 0 },
+      { name: "Farm", baseCost: 5000, cps: 25, owned: 0 },
+      { name: "Factory", baseCost: 50000, cps: 150, owned: 0 },
+      { name: "Wizard Tower", baseCost: 500000, cps: 1000, owned: 0 },
+      { name: "Time Rift", baseCost: 10000000, cps: 10000, owned: 0 },
+      { name: "AI Core", baseCost: 100000000, cps: 100000, owned: 0 },
+      { name: "Universe Core", baseCost: 10000000000, cps: 1000000, owned: 0 }
+    ];
+
+    const buildingUpgrades = {
+      "Autoclicker": ["Clicking Fingers I","Clicking Fingers II","Clicking Fingers III"],
+      "Grandpa": ["Wisdom I","Wisdom II","Wisdom III"],
+      "Farm": ["Fertilizer","Irrigation","Greenhouse"],
+      "Factory": ["Assembly Boost","Automation","Efficiency"],
+      "Wizard Tower": ["Magic Infusion","Arcane Study","Potion Workshop"],
+      "Time Rift": ["Chrono Boost","Time Distortion","Paradox Engine"],
+      "AI Core": ["Algorithm Upgrade","Neural Enhancer","Quantum Processor"],
+      "Universe Core": ["Cosmic Amplifier","Stellar Expansion","Galactic Integration"]
+    };
+
+    const clickUpgrades = [
+      { name: "Stronger Fingers", cost: 500, multiplier: 2, purchased: false },
+      { name: "Iron Fingers", cost: 5000, multiplier: 2, purchased: false },
+      { name: "Titanium Fingers", cost: 50000, multiplier: 2, purchased: false },
+      { name: "Diamond Fingers", cost: 500000, multiplier: 2, purchased: false }
+    ];
+
+    const upgrades = [];
+
+    Object.keys(buildingUpgrades).forEach(b => {
+      const arr = buildingUpgrades[b];
+      arr.forEach((name, i) => {
+        const cost = Math.floor((buildings.find(x=>x.name===b).baseCost) * (i+1) * 10);
+        upgrades.push({ name: name, cost: cost, type: "building", target: b, multiplier: 2, purchased: false });
+      });
     });
 
-    // Buy autoclickers
-    buyButton.addEventListener('click', () => {
-      if (count >= autoclickerCost) {
-        count -= autoclickerCost;
-        counter.textContent = count;
+    clickUpgrades.forEach(cu => upgrades.push({...cu, type:"click"}));
+    upgrades.sort((a,b)=>a.cost-b.cost);
 
-        autoclickers++;
+    buildings.forEach((b,i)=>{
+      const btn = document.createElement('button');
+      btn.id = `buy-${i}`;
+      btn.textContent = `Buy ${b.name} (Cost: ${b.baseCost}, Owned: 0)`;
+      btn.addEventListener('click', ()=>buyBuilding(i));
+      shop.appendChild(btn);
+    });
 
-        // show DPS text if first autoclicker
-        if (autoclickers === 1) {
-          dpsDisplay.style.display = 'block';
+    function renderUpgrades() {
+      upgradesShop.innerHTML = '';
+      let visible = 0;
+      upgrades.forEach((u,i)=>{
+        if(!u.purchased && visible<5){
+          const btn = document.createElement('button');
+          btn.id = `upgrade-${i}`;
+          btn.textContent = `${u.name} (Cost: ${u.cost})`;
+          btn.addEventListener('click', ()=>buyUpgrade(i));
+          upgradesShop.appendChild(btn);
+          visible++;
         }
+      });
+    }
+    renderUpgrades();
 
-        // update DPS text
-        dpsDisplay.textContent = `+${autoclickers} /s`;
-
-        // increase cost
-        autoclickerCost = Math.floor(autoclickerCost * 1.2);
-        buyButton.textContent = `Buy Autoclicker (Cost: ${autoclickerCost})`;
-
-        // create a new autoclicker with its own interval
-        startAutoclicker();
-      }
+    startButton.addEventListener('click', ()=>{
+      page1.classList.add('hidden');
+      page2.classList.remove('hidden');
+      page3.classList.remove('hidden');
+      page4.classList.remove('hidden');
     });
 
-    // Function to add clicks and show +1 animation
-    function addClick(amount) {
-      count += amount;
-      counter.textContent = count;
+    clickButton.addEventListener('click', ()=>addClick(clickPower));
 
-      // floating +1 effect
+    function buyBuilding(i){
+      const b = buildings[i];
+      const cost = Math.floor(b.baseCost*Math.pow(1.2,b.owned));
+      if(count>=cost){
+        count-=cost;
+        b.owned++;
+        updateCounter();
+        updateDPS();
+        const intervalTime = 1000/b.cps;
+        setTimeout(()=>setInterval(()=>addClick(1),intervalTime),Math.random()*1000);
+        document.getElementById(`buy-${i}`).textContent = 
+          `Buy ${b.name} (Cost: ${Math.floor(b.baseCost*Math.pow(1.2,b.owned))}, Owned: ${b.owned})`;
+      }
+    }
+
+    function buyUpgrade(i){
+      const u = upgrades[i];
+      if(!u.purchased && count>=u.cost){
+        count-=u.cost;
+        u.purchased=true;
+        if(u.type==="click") clickPower*=u.multiplier;
+        else if(u.type==="building") {
+          const target = buildings.find(b=>b.name===u.target);
+          target.cps*=u.multiplier;
+        }
+        updateCounter();
+        updateDPS();
+        renderUpgrades();
+      }
+    }
+
+    function addClick(amount){
+      count+=amount;
+      updateCounter();
       const plus = document.createElement('div');
-      plus.textContent = `+${amount}`;
+      plus.textContent=`+${amount}`;
       plus.classList.add('plus1');
-
-      const rect = button.getBoundingClientRect();
-      plus.style.left = rect.left + rect.width / 2 - 10 + 'px';
-      plus.style.top = rect.top - 20 + 'px';
+      const rect = clickButton.getBoundingClientRect();
+      plus.style.left=rect.left+rect.width/2+'px';
+      plus.style.top=rect.top-20+'px';
       document.body.appendChild(plus);
-
-      setTimeout(() => plus.remove(), 1000);
+      setTimeout(()=>plus.remove(),1000);
     }
 
-    // Start one autoclicker with a slightly random offset
-    function startAutoclicker() {
-      const delay = Math.random() * 1000; // random offset up to 1s
-      setTimeout(() => {
-        setInterval(() => {
-          addClick(1);
-        }, 1000);
-      }, delay);
+    function updateCounter(){ counter.textContent=count; }
+    function updateDPS(){
+      const dps = buildings.reduce((sum,b)=>sum+b.owned*b.cps,0);
+      if(dps>0){ 
+        dpsDisplay.style.display='block';
+        dpsDisplay.textContent=`+${dps} /s`;
+      } else { dpsDisplay.style.display='none'; }
     }
+
   </script>
 </body>
 </html>
