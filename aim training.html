@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aim Trainer</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
+    h1 {
+      margin: 20px 0 10px;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 100vw;
+      height: 80vh;
+      background-color: #222;
+      border: 2px solid #444;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    .target {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: red;
+      cursor: pointer;
+    }
+
+    #stats {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Aim Trainer 🎯</h1>
+  <div id="gameArea"></div>
+  <div id="stats">
+    Hits: <span id="hits">0</span> |
+    Misses: <span id="misses">0</span> |
+    Time: <span id="timer">0.0</span>s
+  </div>
+  <button onclick="startGame()">Start Game</button>
+
+  <script>
+    const gameArea = document.getElementById("gameArea");
+    const hitsDisplay = document.getElementById("hits");
+    const missesDisplay = document.getElementById("misses");
+    const timerDisplay = document.getElementById("timer");
+
+    let target = null;
+    let hits = 0;
+    let misses = 0;
+    let totalTargets = 20;
+    let startTime = null;
+    let gameInterval;
+
+    function getRandomPosition() {
+      const padding = 60; // Avoid clipping on edges
+      const x = Math.random() * (window.innerWidth - padding);
+      const y = Math.random() * (gameArea.clientHeight - padding);
+      return { x, y };
+    }
+
+    function spawnTarget() {
+      if (target) {
+        target.remove();
+        misses++;
+        missesDisplay.textContent = misses;
+      }
+
+      if (hits >= totalTargets) {
+        endGame();
+        return;
+      }
+
+      const { x, y } = getRandomPosition();
+      target = document.createElement("div");
+      target.classList.add("target");
+      target.style.left = `${x}px`;
+      target.style.top = `${y}px`;
+
+      target.onclick = () => {
+        hits++;
+        hitsDisplay.textContent = hits;
+        target.remove();
+        spawnTarget();
+      };
+
+      gameArea.appendChild(target);
+    }
+
+    function startGame() {
+      hits = 0;
+      misses = 0;
+      hitsDisplay.textContent = "0";
+      missesDisplay.textContent = "0";
+      timerDisplay.textContent = "0.0";
+      startTime = Date.now();
+
+      if (target) {
+        target.remove();
+      }
+
+      spawnTarget();
+
+      if (gameInterval) clearInterval(gameInterval);
+
+      gameInterval = setInterval(() => {
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        timerDisplay.textContent = elapsed;
+      }, 100);
+    }
+
+    function endGame() {
+      if (target) target.remove();
+      clearInterval(gameInterval);
+      alert(`Game Over!\nHits: ${hits}\nMisses: ${misses}\nTime: ${timerDisplay.textContent}s`);
+    }
+  </script>
+</body>
+</html>
