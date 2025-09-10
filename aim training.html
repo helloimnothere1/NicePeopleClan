@@ -57,6 +57,44 @@
     button:hover {
       background-color: #666;
     }
+
+    /* Custom alert box styles */
+    #customAlert {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #alertBox {
+      background-color: #333;
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 15px #000;
+      max-width: 90%;
+    }
+
+    #alertBox button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: crimson;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #alertBox button:hover {
+      background-color: darkred;
+    }
   </style>
 </head>
 <body>
@@ -70,6 +108,14 @@
   </div>
   <button onclick="startGame()">Start Game</button>
 
+  <!-- Custom alert popup -->
+  <div id="customAlert">
+    <div id="alertBox">
+      <p id="alertMessage">Message</p>
+      <button onclick="closeCustomAlert()">OK</button>
+    </div>
+  </div>
+
   <script>
     const gameArea = document.getElementById("gameArea");
     const hitsDisplay = document.getElementById("hits");
@@ -82,29 +128,25 @@
     const totalTargets = 20;
     let startTime = null;
     let gameInterval;
-    let targetTimeout; // for 3-second timer per target
+    let targetTimeout;
 
-    const targetSize = 50; // target width and height in px
-    const padding = 10;    // padding from edges to avoid clipping
+    const targetSize = 50;
+    const padding = 10;
 
     function getRandomPosition() {
       const maxX = gameArea.clientWidth - targetSize - padding;
       const maxY = gameArea.clientHeight - targetSize - padding;
-
       const x = Math.random() * maxX + padding;
       const y = Math.random() * maxY + padding;
-
       return { x, y };
     }
 
     function spawnTarget() {
-      // Clear existing target timer if any
       if (targetTimeout) {
         clearTimeout(targetTimeout);
         targetTimeout = null;
       }
 
-      // If target exists, player missed it by not clicking within 3 seconds
       if (target) {
         target.remove();
         target = null;
@@ -137,12 +179,10 @@
 
       gameArea.appendChild(target);
 
-      // Start 3-second timer for this target
+      // ⏱️ 3-second timer per target
       targetTimeout = setTimeout(() => {
-        // If timer hits, user failed to click target in time -> lose
         if (target) {
-          alert("you lost bozo XD");
-          restartGame();
+          showCustomAlert("1x1x1x1 says: you lost bozo XD");
         }
       }, 3000);
     }
@@ -185,7 +225,7 @@
         targetTimeout = null;
       }
       clearInterval(gameInterval);
-      alert(`Game Over!\nHits: ${hits}\nMisses: ${misses}\nTime: ${timerDisplay.textContent}s`);
+      showCustomAlert(`Game Over!\nHits: ${hits}\nMisses: ${misses}\nTime: ${timerDisplay.textContent}s`);
     }
 
     function restartGame() {
@@ -199,6 +239,17 @@
       }
       clearInterval(gameInterval);
       startGame();
+    }
+
+    // 🧠 Custom alert system
+    function showCustomAlert(message) {
+      document.getElementById("alertMessage").textContent = message;
+      document.getElementById("customAlert").style.display = "flex";
+    }
+
+    function closeCustomAlert() {
+      document.getElementById("customAlert").style.display = "none";
+      restartGame();
     }
   </script>
 </body>
