@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>clickerclickerclicker</title>
+  <meta charset="UTF-8" />
+  <title>Rainbow Clicker</title>
   <style>
     body {
       margin: 0;
@@ -69,13 +70,7 @@
     .divider {
       width: 100%;
       height: 10px;
-      animation: bodyBorderRainbow 5s linear infinite; /* sync with body border */
-    }
-
-    #page3, #page4 {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      animation: bodyBorderRainbow 5s linear infinite;
     }
 
     .shop, .upgradeShop {
@@ -159,6 +154,7 @@
   <script>
     let count = 0;
     let clickPower = 1;
+    let globalDPS = 0;
 
     const counter = document.getElementById('counter');
     const clickButton = document.getElementById('clickButton');
@@ -183,14 +179,14 @@
     ];
 
     const buildingUpgrades = {
-      "Autoclicker": ["Clicking Fingers I","Clicking Fingers II","Clicking Fingers III"],
-      "Grandpa": ["Wisdom I","Wisdom II","Wisdom III"],
-      "Farm": ["Fertilizer","Irrigation","Greenhouse"],
-      "Factory": ["Assembly Boost","Automation","Efficiency"],
-      "Wizard Tower": ["Magic Infusion","Arcane Study","Potion Workshop"],
-      "Time Rift": ["Chrono Boost","Time Distortion","Paradox Engine"],
-      "AI Core": ["Algorithm Upgrade","Neural Enhancer","Quantum Processor"],
-      "Universe Core": ["Cosmic Amplifier","Stellar Expansion","Galactic Integration"]
+      "Autoclicker": ["Clicking Fingers I", "Clicking Fingers II", "Clicking Fingers III"],
+      "Grandpa": ["Wisdom I", "Wisdom II", "Wisdom III"],
+      "Farm": ["Fertilizer", "Irrigation", "Greenhouse"],
+      "Factory": ["Assembly Boost", "Automation", "Efficiency"],
+      "Wizard Tower": ["Magic Infusion", "Arcane Study", "Potion Workshop"],
+      "Time Rift": ["Chrono Boost", "Time Distortion", "Paradox Engine"],
+      "AI Core": ["Algorithm Upgrade", "Neural Enhancer", "Quantum Processor"],
+      "Universe Core": ["Cosmic Amplifier", "Stellar Expansion", "Galactic Integration"]
     };
 
     const clickUpgrades = [
@@ -205,31 +201,31 @@
     Object.keys(buildingUpgrades).forEach(b => {
       const arr = buildingUpgrades[b];
       arr.forEach((name, i) => {
-        const cost = Math.floor((buildings.find(x=>x.name===b).baseCost) * (i+1) * 10);
+        const cost = Math.floor((buildings.find(x => x.name === b).baseCost) * (i + 1) * 10);
         upgrades.push({ name: name, cost: cost, type: "building", target: b, multiplier: 2, purchased: false });
       });
     });
 
-    clickUpgrades.forEach(cu => upgrades.push({...cu, type:"click"}));
-    upgrades.sort((a,b)=>a.cost-b.cost);
+    clickUpgrades.forEach(cu => upgrades.push({ ...cu, type: "click" }));
+    upgrades.sort((a, b) => a.cost - b.cost);
 
-    buildings.forEach((b,i)=>{
+    buildings.forEach((b, i) => {
       const btn = document.createElement('button');
       btn.id = `buy-${i}`;
       btn.textContent = `Buy ${b.name} (Cost: ${b.baseCost}, Owned: 0)`;
-      btn.addEventListener('click', ()=>buyBuilding(i));
+      btn.addEventListener('click', () => buyBuilding(i));
       shop.appendChild(btn);
     });
 
     function renderUpgrades() {
       upgradesShop.innerHTML = '';
       let visible = 0;
-      upgrades.forEach((u,i)=>{
-        if(!u.purchased && visible<5){
+      upgrades.forEach((u, i) => {
+        if (!u.purchased && visible < 5) {
           const btn = document.createElement('button');
           btn.id = `upgrade-${i}`;
           btn.textContent = `${u.name} (Cost: ${u.cost})`;
-          btn.addEventListener('click', ()=>buyUpgrade(i));
+          btn.addEventListener('click', () => buyUpgrade(i));
           upgradesShop.appendChild(btn);
           visible++;
         }
@@ -237,39 +233,39 @@
     }
     renderUpgrades();
 
-    startButton.addEventListener('click', ()=>{
+    startButton.addEventListener('click', () => {
       page1.classList.add('hidden');
       page2.classList.remove('hidden');
       page3.classList.remove('hidden');
       page4.classList.remove('hidden');
+      updateDPS();
     });
 
-    clickButton.addEventListener('click', ()=>addClick(clickPower));
+    clickButton.addEventListener('click', () => addClick(clickPower));
 
-    function buyBuilding(i){
+    function buyBuilding(i) {
       const b = buildings[i];
-      const cost = Math.floor(b.baseCost*Math.pow(1.2,b.owned));
-      if(count>=cost){
-        count-=cost;
+      const cost = Math.floor(b.baseCost * Math.pow(1.2, b.owned));
+      if (count >= cost) {
+        count -= cost;
         b.owned++;
         updateCounter();
         updateDPS();
-        const intervalTime = 1000/b.cps;
-        setTimeout(()=>setInterval(()=>addClick(1),intervalTime),Math.random()*1000);
-        document.getElementById(`buy-${i}`).textContent = 
-          `Buy ${b.name} (Cost: ${Math.floor(b.baseCost*Math.pow(1.2,b.owned))}, Owned: ${b.owned})`;
+        document.getElementById(`buy-${i}`).textContent =
+          `Buy ${b.name} (Cost: ${Math.floor(b.baseCost * Math.pow(1.2, b.owned))}, Owned: ${b.owned})`;
       }
     }
 
-    function buyUpgrade(i){
+    function buyUpgrade(i) {
       const u = upgrades[i];
-      if(!u.purchased && count>=u.cost){
-        count-=u.cost;
-        u.purchased=true;
-        if(u.type==="click") clickPower*=u.multiplier;
-        else if(u.type==="building") {
-          const target = buildings.find(b=>b.name===u.target);
-          target.cps*=u.multiplier;
+      if (!u.purchased && count >= u.cost) {
+        count -= u.cost;
+        u.purchased = true;
+        if (u.type === "click") {
+          clickPower *= u.multiplier;
+        } else if (u.type === "building") {
+          const target = buildings.find(b => b.name === u.target);
+          target.cps *= u.multiplier;
         }
         updateCounter();
         updateDPS();
@@ -277,28 +273,39 @@
       }
     }
 
-    function addClick(amount){
-      count+=amount;
+    function addClick(amount) {
+      count += amount;
       updateCounter();
       const plus = document.createElement('div');
-      plus.textContent=`+${amount}`;
+      plus.textContent = `+${amount}`;
       plus.classList.add('plus1');
       const rect = clickButton.getBoundingClientRect();
-      plus.style.left=rect.left+rect.width/2+'px';
-      plus.style.top=rect.top-20+'px';
+      plus.style.left = rect.left + rect.width / 2 + 'px';
+      plus.style.top = rect.top - 20 + 'px';
       document.body.appendChild(plus);
-      setTimeout(()=>plus.remove(),1000);
+      setTimeout(() => plus.remove(), 1000);
     }
 
-    function updateCounter(){ counter.textContent=count; }
-    function updateDPS(){
-      const dps = buildings.reduce((sum,b)=>sum+b.owned*b.cps,0);
-      if(dps>0){ 
-        dpsDisplay.style.display='block';
-        dpsDisplay.textContent=`+${dps} /s`;
-      } else { dpsDisplay.style.display='none'; }
+    function updateCounter() {
+      counter.textContent = count;
     }
 
+    function updateDPS() {
+      globalDPS = buildings.reduce((sum, b) => sum + b.owned * b.cps, 0);
+      if (globalDPS > 0) {
+        dpsDisplay.style.display = 'block';
+        dpsDisplay.textContent = `+${globalDPS} /s`;
+      } else {
+        dpsDisplay.style.display = 'none';
+      }
+    }
+
+    // Run passive DPS every second
+    setInterval(() => {
+      if (globalDPS > 0) {
+        addClick(globalDPS);
+      }
+    }, 1000);
   </script>
 </body>
 </html>
