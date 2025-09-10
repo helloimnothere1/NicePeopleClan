@@ -27,7 +27,7 @@
       background-color: #222;
       border: 2px solid #444;
       overflow: hidden;
-      cursor: crosshair; /* consistent cursor */
+      cursor: crosshair;
     }
 
     .target {
@@ -36,7 +36,6 @@
       height: 50px;
       border-radius: 50%;
       background-color: red;
-      /* removed pointer cursor to keep crosshair */
     }
 
     #stats {
@@ -83,12 +82,12 @@
     const totalTargets = 20;
     let startTime = null;
     let gameInterval;
+    let targetTimeout; // for 3-second timer per target
 
     const targetSize = 50; // target width and height in px
     const padding = 10;    // padding from edges to avoid clipping
 
     function getRandomPosition() {
-      // Use gameArea dimensions to keep targets inside
       const maxX = gameArea.clientWidth - targetSize - padding;
       const maxY = gameArea.clientHeight - targetSize - padding;
 
@@ -99,7 +98,13 @@
     }
 
     function spawnTarget() {
-      // If a target already exists, the player missed it (did not click before next spawn)
+      // Clear existing target timer if any
+      if (targetTimeout) {
+        clearTimeout(targetTimeout);
+        targetTimeout = null;
+      }
+
+      // If target exists, player missed it by not clicking within 3 seconds
       if (target) {
         target.remove();
         target = null;
@@ -121,12 +126,25 @@
       target.onclick = () => {
         hits++;
         hitsDisplay.textContent = hits;
+        if (targetTimeout) {
+          clearTimeout(targetTimeout);
+          targetTimeout = null;
+        }
         target.remove();
-        target = null; // Clear target reference to avoid counting miss
+        target = null;
         spawnTarget();
       };
 
       gameArea.appendChild(target);
+
+      // Start 3-second timer for this target
+      targetTimeout = setTimeout(() => {
+        // If timer hits, user failed to click target in time -> lose
+        if (target) {
+          alert("you lost bozo XD");
+          restartGame();
+        }
+      }, 3000);
     }
 
     function startGame() {
@@ -140,6 +158,11 @@
       if (target) {
         target.remove();
         target = null;
+      }
+
+      if (targetTimeout) {
+        clearTimeout(targetTimeout);
+        targetTimeout = null;
       }
 
       spawnTarget();
@@ -157,8 +180,25 @@
         target.remove();
         target = null;
       }
+      if (targetTimeout) {
+        clearTimeout(targetTimeout);
+        targetTimeout = null;
+      }
       clearInterval(gameInterval);
       alert(`Game Over!\nHits: ${hits}\nMisses: ${misses}\nTime: ${timerDisplay.textContent}s`);
+    }
+
+    function restartGame() {
+      if (target) {
+        target.remove();
+        target = null;
+      }
+      if (targetTimeout) {
+        clearTimeout(targetTimeout);
+        targetTimeout = null;
+      }
+      clearInterval(gameInterval);
+      startGame();
     }
   </script>
 </body>
