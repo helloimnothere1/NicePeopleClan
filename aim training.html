@@ -27,7 +27,7 @@
       background-color: #222;
       border: 2px solid #444;
       overflow: hidden;
-      cursor: crosshair;
+      cursor: crosshair; /* consistent cursor */
     }
 
     .target {
@@ -36,7 +36,7 @@
       height: 50px;
       border-radius: 50%;
       background-color: red;
-      cursor: pointer;
+      /* removed pointer cursor to keep crosshair */
     }
 
     #stats {
@@ -80,20 +80,29 @@
     let target = null;
     let hits = 0;
     let misses = 0;
-    let totalTargets = 20;
+    const totalTargets = 20;
     let startTime = null;
     let gameInterval;
 
+    const targetSize = 50; // target width and height in px
+    const padding = 10;    // padding from edges to avoid clipping
+
     function getRandomPosition() {
-      const padding = 60; // Avoid clipping on edges
-      const x = Math.random() * (window.innerWidth - padding);
-      const y = Math.random() * (gameArea.clientHeight - padding);
+      // Use gameArea dimensions to keep targets inside
+      const maxX = gameArea.clientWidth - targetSize - padding;
+      const maxY = gameArea.clientHeight - targetSize - padding;
+
+      const x = Math.random() * maxX + padding;
+      const y = Math.random() * maxY + padding;
+
       return { x, y };
     }
 
     function spawnTarget() {
+      // If a target already exists, the player missed it (did not click before next spawn)
       if (target) {
         target.remove();
+        target = null;
         misses++;
         missesDisplay.textContent = misses;
       }
@@ -113,6 +122,7 @@
         hits++;
         hitsDisplay.textContent = hits;
         target.remove();
+        target = null; // Clear target reference to avoid counting miss
         spawnTarget();
       };
 
@@ -129,6 +139,7 @@
 
       if (target) {
         target.remove();
+        target = null;
       }
 
       spawnTarget();
@@ -142,7 +153,10 @@
     }
 
     function endGame() {
-      if (target) target.remove();
+      if (target) {
+        target.remove();
+        target = null;
+      }
       clearInterval(gameInterval);
       alert(`Game Over!\nHits: ${hits}\nMisses: ${misses}\nTime: ${timerDisplay.textContent}s`);
     }
