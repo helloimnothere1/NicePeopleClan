@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Rainbow Clicker</title>
+  <title>i eat pickes -1x1x1x1</title>
   <style>
     body {
       margin: 0;
@@ -120,7 +120,6 @@
   </style>
 </head>
 <body>
-  <!-- Page 1 -->
   <section id="page1">
     <h1>Welcome!</h1>
     <button id="startButton">Start Game</button>
@@ -128,7 +127,6 @@
 
   <div class="divider hidden" id="divider2"></div>
 
-  <!-- Page 2 -->
   <section id="page2" class="hidden">
     <h1 id="counter">0</h1>
     <button id="clickButton">Click Me</button>
@@ -137,7 +135,6 @@
 
   <div class="divider hidden" id="divider3"></div>
 
-  <!-- Page 3: Buildings -->
   <section id="page3" class="hidden">
     <h1>Buildings</h1>
     <div class="shop" id="shop"></div>
@@ -145,7 +142,6 @@
 
   <div class="divider hidden" id="divider4"></div>
 
-  <!-- Page 4: Upgrades -->
   <section id="page4" class="hidden">
     <h1>Upgrades</h1>
     <div class="upgradeShop" id="upgrades"></div>
@@ -207,6 +203,7 @@
     });
 
     clickUpgrades.forEach(cu => upgrades.push({ ...cu, type: "click" }));
+
     upgrades.sort((a, b) => a.cost - b.cost);
 
     buildings.forEach((b, i) => {
@@ -231,17 +228,20 @@
         }
       });
     }
-    renderUpgrades();
 
-    startButton.addEventListener('click', () => {
-      page1.classList.add('hidden');
-      page2.classList.remove('hidden');
-      page3.classList.remove('hidden');
-      page4.classList.remove('hidden');
-      updateDPS();
-    });
+    function updateCounter() {
+      counter.textContent = count;
+    }
 
-    clickButton.addEventListener('click', () => addClick(clickPower));
+    function updateDPS() {
+      globalDPS = buildings.reduce((sum, b) => sum + b.owned * b.cps, 0);
+      if (globalDPS > 0) {
+        dpsDisplay.style.display = 'block';
+        dpsDisplay.textContent = `+${globalDPS} /s`;
+      } else {
+        dpsDisplay.style.display = 'none';
+      }
+    }
 
     function buyBuilding(i) {
       const b = buildings[i];
@@ -286,26 +286,55 @@
       setTimeout(() => plus.remove(), 1000);
     }
 
-    function updateCounter() {
-      counter.textContent = count;
-    }
+    clickButton.addEventListener('click', () => addClick(clickPower));
 
-    function updateDPS() {
-      globalDPS = buildings.reduce((sum, b) => sum + b.owned * b.cps, 0);
-      if (globalDPS > 0) {
-        dpsDisplay.style.display = 'block';
-        dpsDisplay.textContent = `+${globalDPS} /s`;
-      } else {
-        dpsDisplay.style.display = 'none';
-      }
-    }
-
-    // Run passive DPS every second
+    // Passive DPS
     setInterval(() => {
-      if (globalDPS > 0) {
-        addClick(globalDPS);
-      }
+      if (globalDPS > 0) addClick(globalDPS);
     }, 1000);
+
+    startButton.addEventListener('click', () => {
+      page1.classList.add('hidden');
+      page2.classList.remove('hidden');
+      page3.classList.remove('hidden');
+      page4.classList.remove('hidden');
+      updateDPS();
+    });
+
+    renderUpgrades();
+
+    // === SAVE/LOAD SYSTEM ===
+    function saveGame() {
+      const saveData = {
+        count,
+        clickPower,
+        buildings,
+        upgrades
+      };
+      localStorage.setItem('rainbowClickerSave', JSON.stringify(saveData));
+    }
+
+    function loadGame() {
+      const data = JSON.parse(localStorage.getItem('rainbowClickerSave'));
+      if (!data) return;
+      count = data.count;
+      clickPower = data.clickPower;
+      data.buildings.forEach((b, i) => {
+        buildings[i].owned = b.owned;
+        buildings[i].cps = b.cps;
+        document.getElementById(`buy-${i}`).textContent =
+          `Buy ${buildings[i].name} (Cost: ${Math.floor(buildings[i].baseCost * Math.pow(1.2, b.owned))}, Owned: ${b.owned})`;
+      });
+      data.upgrades.forEach((u, i) => {
+        upgrades[i].purchased = u.purchased;
+      });
+      renderUpgrades();
+      updateCounter();
+      updateDPS();
+    }
+
+    loadGame();
+    setInterval(saveGame, 30000); // Save every 30s
   </script>
 </body>
 </html>
