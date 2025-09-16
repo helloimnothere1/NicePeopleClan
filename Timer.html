@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Timer</title>
+  <title>Timer Dashboard</title>
   <style>
     * {
       box-sizing: border-box;
@@ -23,16 +23,8 @@
       border: 10px solid red;
       animation: rainbowBorder 5s linear infinite;
       overflow: hidden;
-
-      scrollbar-width: none;
-      -ms-overflow-style: none;
     }
 
-    body::-webkit-scrollbar {
-      display: none;
-    }
-
-    /* Rainbow animations */
     @keyframes rainbowBorder {
       0%   { border-color: red; }
       16.6%  { border-color: orange; }
@@ -60,70 +52,182 @@
       align-items: center;
       justify-content: center;
       color: white;
+      padding: 20px;
     }
 
-    .top-left h1,
-    .top-right h1 {
-      font-size: 2.5rem;
+    h1 {
+      font-size: 2rem;
       animation: rainbowText 5s linear infinite;
       user-select: none;
     }
 
-    .time-display,
-    .real-time-display {
+    .display {
       font-size: 2rem;
-      margin-top: 10px;
+      margin: 10px 0;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #222;
+      color: white;
+      border: 2px solid white;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #444;
+    }
+
+    input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      margin: 5px;
+      font-size: 1rem;
+      border: 2px solid white;
+      border-radius: 4px;
+      background-color: #111;
+      color: white;
+    }
+
+    .input-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
 
   <!-- Top-left: Real Time -->
-  <div class="grid-cell top-left">
+  <div class="grid-cell">
     <h1>Real Time</h1>
-    <div class="real-time-display" id="realTime">--:--:--</div>
+    <div class="display" id="realTime">--:--:--</div>
   </div>
 
-  <!-- Top-right: Timer -->
-  <div class="grid-cell top-right">
-    <h1>Timer</h1>
-    <div class="time-display" id="timer">00:00</div>
+  <!-- Top-right: Count-Up Timer -->
+  <div class="grid-cell">
+    <h1>Time of tab open</h1>
+    <div class="display" id="timer">00:00</div>
   </div>
 
-  <!-- Bottom-left -->
-  <div class="grid-cell"></div>
+  <!-- Bottom-left: Stopwatch -->
+  <div class="grid-cell">
+    <h1>Stopwatch</h1>
+    <div class="display" id="stopwatch">00:00.00</div>
+    <div>
+      <button onclick="startStopwatch()">Start</button>
+      <button onclick="stopStopwatch()">Stop</button>
+      <button onclick="resetStopwatch()">Reset</button>
+    </div>
+  </div>
 
-  <!-- Bottom-right -->
-  <div class="grid-cell"></div>
+  <!-- Bottom-right: Countdown Timer -->
+  <div class="grid-cell">
+    <h1>Countdown Timer</h1>
+    <div class="input-group">
+      <input type="number" id="countdownMinutes" placeholder="Min" min="0">
+      <input type="number" id="countdownSeconds" placeholder="Sec" min="0" max="59">
+    </div>
+    <div class="display" id="countdownDisplay">00:00</div>
+    <div>
+      <button onclick="startCountdown()">Start</button>
+      <button onclick="resetCountdown()">Reset</button>
+    </div>
+  </div>
 
   <script>
-    // Timer logic (count-up)
-    let seconds = 0;
-    const timerDisplay = document.getElementById("timer");
-
-    setInterval(() => {
-      seconds++;
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-
-      timerDisplay.textContent =
-        `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-    }, 1000);
-
     // Real Time Clock
     const realTimeDisplay = document.getElementById("realTime");
-
     function updateRealTime() {
       const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      realTimeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      realTimeDisplay.textContent = `${h}:${m}:${s}`;
+    }
+    setInterval(updateRealTime, 1000);
+    updateRealTime();
+
+    // Count-Up Timer
+    let timerSeconds = 0;
+    const timerDisplay = document.getElementById("timer");
+    setInterval(() => {
+      timerSeconds++;
+      const min = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+      const sec = String(timerSeconds % 60).padStart(2, '0');
+      timerDisplay.textContent = `${min}:${sec}`;
+    }, 1000);
+
+    // Stopwatch
+    let stopwatchTime = 0;
+    let stopwatchInterval;
+    const stopwatchDisplay = document.getElementById("stopwatch");
+
+    function startStopwatch() {
+      if (stopwatchInterval) return;
+      stopwatchInterval = setInterval(() => {
+        stopwatchTime += 10;
+        const minutes = String(Math.floor(stopwatchTime / 60000)).padStart(2, '0');
+        const seconds = String(Math.floor((stopwatchTime % 60000) / 1000)).padStart(2, '0');
+        const hundredths = String(Math.floor((stopwatchTime % 1000) / 10)).padStart(2, '0');
+        stopwatchDisplay.textContent = `${minutes}:${seconds}.${hundredths}`;
+      }, 10);
     }
 
-    // Update every second
-    setInterval(updateRealTime, 1000);
-    updateRealTime(); // Run once immediately
+    function stopStopwatch() {
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+    }
+
+    function resetStopwatch() {
+      stopStopwatch();
+      stopwatchTime = 0;
+      stopwatchDisplay.textContent = '00:00.00';
+    }
+
+    // Countdown Timer
+    let countdownTime = 0;
+    let countdownInterval;
+    const countdownDisplay = document.getElementById("countdownDisplay");
+
+    function startCountdown() {
+      const minutes = parseInt(document.getElementById("countdownMinutes").value) || 0;
+      const seconds = parseInt(document.getElementById("countdownSeconds").value) || 0;
+      countdownTime = (minutes * 60 + seconds);
+
+      if (countdownTime <= 0) return;
+
+      updateCountdownDisplay();
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        countdownTime--;
+        updateCountdownDisplay();
+
+        if (countdownTime <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+    }
+
+    function resetCountdown() {
+      clearInterval(countdownInterval);
+      countdownTime = 0;
+      countdownDisplay.textContent = '00:00';
+    }
+
+    function updateCountdownDisplay() {
+      const min = String(Math.floor(countdownTime / 60)).padStart(2, '0');
+      const sec = String(countdownTime % 60).padStart(2, '0');
+      countdownDisplay.textContent = `${min}:${sec}`;
+    }
   </script>
 
 </body>
