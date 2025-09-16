@@ -53,12 +53,17 @@
       justify-content: center;
       color: white;
       padding: 20px;
+      position: relative;
+      background-color: #000;
+      transition: background 0.3s;
     }
 
     h1 {
       font-size: 2rem;
       animation: rainbowText 5s linear infinite;
       user-select: none;
+      margin-bottom: 10px;
+      text-align: center;
     }
 
     .display {
@@ -102,24 +107,74 @@
       flex-wrap: wrap;
       margin-bottom: 10px;
     }
+
+    .fullscreen-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid white;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+
+    .fullscreen-btn:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Fullscreen background wallpaper */
+    .fullscreen-background {
+      background-image: url("https://cdn.wallpapersafari.com/48/37/9JD7WQ.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Enlarged text when in fullscreen */
+    .fullscreen-mode h1 {
+      font-size: 3.5rem;
+    }
+
+    .fullscreen-mode .display {
+      font-size: 3rem;
+    }
+
+    .fullscreen-mode button {
+      font-size: 1.5rem;
+      padding: 12px 24px;
+    }
+
+    .fullscreen-mode input[type="number"] {
+      font-size: 1.2rem;
+      width: 70px;
+    }
+
   </style>
 </head>
 <body>
 
   <!-- Top-left: Real Time -->
-  <div class="grid-cell">
+  <div class="grid-cell" id="top-left">
+    <button class="fullscreen-btn" onclick="toggleFullscreen('top-left', this)">🔲 Fullscreen</button>
     <h1>Real Time</h1>
     <div class="display" id="realTime">--:--:--</div>
   </div>
 
-  <!-- Top-right: Count-Up Timer -->
-  <div class="grid-cell">
-    <h1>Time of tab open</h1>
+  <!-- Top-right: Time of this tab open -->
+  <div class="grid-cell" id="top-right">
+    <button class="fullscreen-btn" onclick="toggleFullscreen('top-right', this)">🔲 Fullscreen</button>
+    <h1>Time of this tab open</h1>
     <div class="display" id="timer">00:00</div>
   </div>
 
   <!-- Bottom-left: Stopwatch -->
-  <div class="grid-cell">
+  <div class="grid-cell" id="bottom-left">
+    <button class="fullscreen-btn" onclick="toggleFullscreen('bottom-left', this)">🔲 Fullscreen</button>
     <h1>Stopwatch</h1>
     <div class="display" id="stopwatch">00:00.00</div>
     <div>
@@ -130,7 +185,8 @@
   </div>
 
   <!-- Bottom-right: Countdown Timer -->
-  <div class="grid-cell">
+  <div class="grid-cell" id="bottom-right">
+    <button class="fullscreen-btn" onclick="toggleFullscreen('bottom-right', this)">🔲 Fullscreen</button>
     <h1>Countdown Timer</h1>
     <div class="input-group">
       <input type="number" id="countdownMinutes" placeholder="Min" min="0">
@@ -156,7 +212,7 @@
     setInterval(updateRealTime, 1000);
     updateRealTime();
 
-    // Count-Up Timer
+    // Tab-open timer
     let timerSeconds = 0;
     const timerDisplay = document.getElementById("timer");
     setInterval(() => {
@@ -210,7 +266,6 @@
       countdownInterval = setInterval(() => {
         countdownTime--;
         updateCountdownDisplay();
-
         if (countdownTime <= 0) {
           clearInterval(countdownInterval);
         }
@@ -228,8 +283,33 @@
       const sec = String(countdownTime % 60).padStart(2, '0');
       countdownDisplay.textContent = `${min}:${sec}`;
     }
+
+    // Fullscreen toggle
+    function toggleFullscreen(id, button) {
+      const element = document.getElementById(id);
+      if (!document.fullscreenElement) {
+        element.requestFullscreen().then(() => {
+          button.textContent = "❌ Exit Fullscreen";
+          element.classList.add('fullscreen-background', 'fullscreen-mode');
+        });
+      } else {
+        document.exitFullscreen().then(() => {
+          button.textContent = "🔲 Fullscreen";
+          document.querySelectorAll('.grid-cell').forEach(el => el.classList.remove('fullscreen-background', 'fullscreen-mode'));
+        });
+      }
+    }
+
+    // Exit fullscreen cleanup
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement) {
+        document.querySelectorAll('.fullscreen-btn').forEach(btn => {
+          btn.textContent = "🔲 Fullscreen";
+        });
+        document.querySelectorAll('.grid-cell').forEach(el => el.classList.remove('fullscreen-background', 'fullscreen-mode'));
+      }
+    });
   </script>
 
 </body>
 </html>
-
