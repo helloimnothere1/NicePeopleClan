@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Timer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100vh;
+      width: 100vw;
+      font-family: Arial, sans-serif;
+      background-color: #000;
+    }
+
+    body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      border: 10px solid red;
+      animation: rainbowBorder 5s linear infinite;
+      overflow: hidden;
+
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Rainbow animations */
+    @keyframes rainbowBorder {
+      0%   { border-color: red; }
+      16.6%  { border-color: orange; }
+      33.3%  { border-color: yellow; }
+      50%  { border-color: green; }
+      66.6%  { border-color: blue; }
+      83.3%  { border-color: indigo; }
+      100% { border-color: red; }
+    }
+
+    @keyframes rainbowText {
+      0%   { color: red; }
+      16.6%  { color: orange; }
+      33.3%  { color: yellow; }
+      50%  { color: green; }
+      66.6%  { color: blue; }
+      83.3%  { color: indigo; }
+      100% { color: red; }
+    }
+
+    .grid-cell {
+      border: 2px solid white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .top-left h1,
+    .top-right h1 {
+      font-size: 2.5rem;
+      animation: rainbowText 5s linear infinite;
+      user-select: none;
+    }
+
+    .time-display,
+    .real-time-display {
+      font-size: 2rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top-left: Real Time -->
+  <div class="grid-cell top-left">
+    <h1>Real Time</h1>
+    <div class="real-time-display" id="realTime">--:--:--</div>
+  </div>
+
+  <!-- Top-right: Timer -->
+  <div class="grid-cell top-right">
+    <h1>Timer</h1>
+    <div class="time-display" id="timer">00:00</div>
+  </div>
+
+  <!-- Bottom-left -->
+  <div class="grid-cell"></div>
+
+  <!-- Bottom-right -->
+  <div class="grid-cell"></div>
+
+  <script>
+    // Timer logic (count-up)
+    let seconds = 0;
+    const timerDisplay = document.getElementById("timer");
+
+    setInterval(() => {
+      seconds++;
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+
+      timerDisplay.textContent =
+        `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+    }, 1000);
+
+    // Real Time Clock
+    const realTimeDisplay = document.getElementById("realTime");
+
+    function updateRealTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      realTimeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    // Update every second
+    setInterval(updateRealTime, 1000);
+    updateRealTime(); // Run once immediately
+  </script>
+
+</body>
+</html>
+
