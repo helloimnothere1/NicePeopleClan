@@ -33,7 +33,7 @@
 
     h1 { font-size: 3rem; margin: 10px 0; }
 
-    #clickButton, .shop button, .upgradeShop button {
+    #clickButton, .shop button, .upgradeShop button, #rebirthButton {
       background: red;
       border: 5px solid;
       border-radius: 15px;
@@ -117,6 +117,20 @@
     }
 
     .hidden { display: none; }
+
+    #rebirthSection {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #rebirthButton {
+      background: purple;
+      color: white;
+      font-size: 18px;
+      border: 5px solid white;
+      border-radius: 10px;
+      padding: 10px 20px;
+    }
   </style>
 </head>
 <body>
@@ -131,6 +145,11 @@
     <h1 id="counter">0</h1>
     <button id="clickButton">Click Me</button>
     <div id="dps"></div>
+
+    <div id="rebirthSection" class="hidden">
+      <h2>Rebirths: <span id="rebirthCount">0</span></h2>
+      <button id="rebirthButton">Rebirth (Cost: 10000)</button>
+    </div>
   </section>
 
   <div class="divider hidden" id="divider3"></div>
@@ -152,6 +171,10 @@
     let clickPower = 1;
     let globalDPS = 0;
 
+    let rebirths = 0;
+    let rebirthCost = 10000;
+    let rebirthMultiplier = 1;
+
     const counter = document.getElementById('counter');
     const clickButton = document.getElementById('clickButton');
     const dpsDisplay = document.getElementById('dps');
@@ -162,6 +185,10 @@
     const page2 = document.getElementById('page2');
     const page3 = document.getElementById('page3');
     const page4 = document.getElementById('page4');
+
+    const rebirthSection = document.getElementById("rebirthSection");
+    const rebirthCountDisplay = document.getElementById("rebirthCount");
+    const rebirthButton = document.getElementById("rebirthButton");
 
     const buildings = [
       { name: "Autoclicker", baseCost: 100, cps: 1, owned: 0 },
@@ -178,7 +205,7 @@
       "Autoclicker": ["Clicking Fingers I", "Clicking Fingers II", "Clicking Fingers III"],
       "Grandpa": ["Wisdom I", "Wisdom II", "Wisdom III"],
       "Farm": ["Fertilizer", "Irrigation", "Greenhouse"],
-      "Factory": ["Assembly Boost", "Automation", "Efficiency"],
+            "Factory": ["Assembly Boost", "Automation", "Efficiency"],
       "Wizard Tower": ["Magic Infusion", "Arcane Study", "Potion Workshop"],
       "Time Rift": ["Chrono Boost", "Time Distortion", "Paradox Engine"],
       "AI Core": ["Algorithm Upgrade", "Neural Enhancer", "Quantum Processor"],
@@ -203,7 +230,6 @@
     });
 
     clickUpgrades.forEach(cu => upgrades.push({ ...cu, type: "click" }));
-
     upgrades.sort((a, b) => a.cost - b.cost);
 
     buildings.forEach((b, i) => {
@@ -230,16 +256,26 @@
     }
 
     function updateCounter() {
-      counter.textContent = count;
+      counter.textContent = Math.floor(count);
     }
 
     function updateDPS() {
-      globalDPS = buildings.reduce((sum, b) => sum + b.owned * b.cps, 0);
+      globalDPS = buildings.reduce((sum, b) => sum + b.owned * b.cps, 0) * rebirthMultiplier;
       if (globalDPS > 0) {
         dpsDisplay.style.display = 'block';
-        dpsDisplay.textContent = `+${globalDPS} /s`;
+        dpsDisplay.textContent = `+${Math.floor(globalDPS)} /s`;
       } else {
         dpsDisplay.style.display = 'none';
+      }
+    }
+
+    function updateRebirthUI() {
+      rebirthCountDisplay.textContent = rebirths;
+      rebirthButton.textContent = `Rebirth (Cost: ${Math.floor(rebirthCost)})`;
+      if (count >= rebirthCost) {
+        rebirthSection.classList.remove("hidden");
+      } else {
+        rebirthSection.classList.add("hidden");
       }
     }
 
@@ -262,20 +298,22 @@
         count -= u.cost;
         u.purchased = true;
         if (u.type === "click") {
-          clickPower *= u.multiplier;
+          clickPower *= u.multiplier * rebirthMultiplier;
         } else if (u.type === "building") {
           const target = buildings.find(b => b.name === u.target);
-          target.cps *= u.multiplier;
+          target.cps *= u.multiplier * rebirthMultiplier;
         }
         updateCounter();
         updateDPS();
         renderUpgrades();
+        updateRebirthUI();
       }
     }
 
     function addClick(amount) {
       count += amount;
       updateCounter();
+      updateRebirthUI();
       const plus = document.createElement('div');
       plus.textContent = `+${amount}`;
       plus.classList.add('plus1');
@@ -288,7 +326,6 @@
 
     clickButton.addEventListener('click', () => addClick(clickPower));
 
-    // Passive DPS
     setInterval(() => {
       if (globalDPS > 0) addClick(globalDPS);
     }, 1000);
@@ -299,17 +336,43 @@
       page3.classList.remove('hidden');
       page4.classList.remove('hidden');
       updateDPS();
+      updateRebirthUI();
+    });
+
+    rebirthButton.addEventListener('click', () => {
+      if (count >= rebirthCost) {
+        count = 0;
+        clickPower = 1;
+        buildings.forEach(b => {
+          b.owned = 0;
+          b.cps = b.baseCost / 100;
+        });
+        upgrades.forEach(u => u.purchased = false);
+        rebirths++;
+        rebirthMultiplier *= 1.5;
+        rebirthCost *= 1.4;
+        renderUpgrades();
+        updateCounter();
+        updateDPS();
+        updateRebirthUI();
+        buildings.forEach((b, i) => {
+          document.getElementById(`buy-${i}`).textContent =
+            `Buy ${b.name} (Cost: ${Math.floor(b.baseCost)}, Owned: 0)`;
+        });
+      }
     });
 
     renderUpgrades();
 
-    // === SAVE/LOAD SYSTEM ===
     function saveGame() {
       const saveData = {
         count,
         clickPower,
         buildings,
-        upgrades
+        upgrades,
+        rebirths,
+        rebirthCost,
+        rebirthMultiplier
       };
       localStorage.setItem('rainbowClickerSave', JSON.stringify(saveData));
     }
@@ -328,9 +391,13 @@
       data.upgrades.forEach((u, i) => {
         upgrades[i].purchased = u.purchased;
       });
+      rebirths = data.rebirths || 0;
+      rebirthCost = data.rebirthCost || 10000;
+      rebirthMultiplier = data.rebirthMultiplier || 1;
       renderUpgrades();
       updateCounter();
       updateDPS();
+      updateRebirthUI();
     }
 
     loadGame();
@@ -338,3 +405,5 @@
   </script>
 </body>
 </html>
+
+
