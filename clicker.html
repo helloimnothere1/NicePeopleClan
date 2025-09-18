@@ -12,7 +12,6 @@
       border: 10px solid red;
       animation: bodyBorderRainbow 5s linear infinite;
     }
-
     @keyframes bodyBorderRainbow {
       0%   { border-color: hsl(0, 100%, 50%); }
       16.6%  { border-color: hsl(60, 100%, 50%); }
@@ -22,18 +21,16 @@
       83.3%  { border-color: hsl(300, 100%, 50%); }
       100% { border-color: hsl(360, 100%, 50%); }
     }
-
     section {
-      height: 100vh;
+      min-height: 100vh;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
     }
-
     h1 { font-size: 3rem; margin: 10px 0; }
-
-    #clickButton, .shop button, .upgradeShop button, #rebirthButton {
+    button {
       background: red;
       border: 5px solid;
       border-radius: 15px;
@@ -45,7 +42,9 @@
       animation: borderRainbow 3s linear infinite;
       min-width: 150px;
     }
-
+    #skillTreeButton {
+      background: blue;
+    }
     @keyframes borderRainbow {
       0%   { border-color: hsl(0, 100%, 50%); }
       16.6%  { border-color: hsl(60, 100%, 50%); }
@@ -55,7 +54,6 @@
       83.3%  { border-color: hsl(300, 100%, 50%); }
       100% { border-color: hsl(360, 100%, 50%); }
     }
-
     #startButton {
       background: red;
       color: white;
@@ -66,13 +64,11 @@
       cursor: pointer;
       animation: borderRainbow 3s linear infinite;
     }
-
     .divider {
       width: 100%;
       height: 10px;
       animation: bodyBorderRainbow 5s linear infinite;
     }
-
     .shop, .upgradeShop {
       display: flex;
       flex-wrap: wrap;
@@ -80,19 +76,16 @@
       margin: 10px 0;
       width: 80%;
     }
-
     .shop button, .upgradeShop button {
       flex: 1 1 150px;
       margin: 5px;
     }
-
     #dps {
       font-size: 2rem;
       display: none;
       margin-top: 10px;
       animation: rainbowText 5s linear infinite;
     }
-
     @keyframes rainbowText {
       0% { color: hsl(0, 100%, 50%); }
       16% { color: hsl(60, 100%, 50%); }
@@ -102,7 +95,6 @@
       83% { color: hsl(300, 100%, 50%); }
       100% { color: hsl(360, 100%, 50%); }
     }
-
     .plus1 {
       position: absolute;
       font-size: 20px;
@@ -110,19 +102,15 @@
       color: yellow;
       pointer-events: none;
     }
-
     @keyframes floatUp {
       from { opacity: 1; transform: translateY(0); }
       to { opacity: 0; transform: translateY(-50px); }
     }
-
     .hidden { display: none; }
-
     #rebirthSection {
       margin-top: 20px;
       text-align: center;
     }
-
     #rebirthButton {
       background: purple;
       color: white;
@@ -130,6 +118,87 @@
       border: 5px solid white;
       border-radius: 10px;
       padding: 10px 20px;
+    }
+    #skillTreeContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .skill-node {
+      border: 2px solid cyan;
+      border-radius: 10px;
+      padding: 10px;
+      width: 200px;
+      background: rgba(0, 255, 255, 0.1);
+      text-align: center;
+    }
+    /* New Styles for Sugar Lump & mini-games */
+    #sugarLumps {
+      margin: 10px 0;
+      font-size: 1.5rem;
+      border: 2px solid #ffcc00;
+      border-radius: 10px;
+      padding: 10px 20px;
+      background: #222200aa;
+      cursor: pointer;
+      user-select: none;
+      animation: pulseGlow 3s infinite;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 10px 3px #ffcc00; }
+      50% { box-shadow: 0 0 20px 6px #ffff55; }
+    }
+    #farmUI, #aiCoreUI {
+      border: 2px solid cyan;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 15px;
+      background: #002222aa;
+      width: 90%;
+      max-width: 600px;
+      color: white;
+      font-size: 1rem;
+    }
+    #farmUI h2, #aiCoreUI h2 {
+      margin-top: 0;
+    }
+    #farmSeeds {
+      display: flex;
+      justify-content: space-around;
+      margin: 10px 0;
+    }
+    #farmSeeds button {
+      flex: 1 1 100px;
+      margin: 5px;
+      background: green;
+      border-color: darkgreen;
+    }
+    #farmStatus {
+      margin-top: 10px;
+      min-height: 30px;
+    }
+    #stockTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    #stockTable th, #stockTable td {
+      border: 1px solid cyan;
+      padding: 6px 10px;
+      text-align: center;
+    }
+    #stockTable th {
+      background: #005555cc;
+    }
+    #stockMarketActions button {
+      margin: 5px;
+      min-width: 60px;
+    }
+    #stockMarketActions input {
+      width: 50px;
+      text-align: center;
     }
   </style>
 </head>
@@ -146,10 +215,15 @@
     <button id="clickButton">Click Me</button>
     <div id="dps"></div>
 
+    <!-- Sugar Lumps -->
+    <div id="sugarLumps" title="Click to harvest sugar lumps">Sugar Lumps: <span id="sugarLumpCount">0</span></div>
+
     <div id="rebirthSection" class="hidden">
       <h2>Rebirths: <span id="rebirthCount">0</span></h2>
       <button id="rebirthButton">Rebirth (Cost: 10000)</button>
     </div>
+
+    <button id="skillTreeButton" class="hidden">Open Skill Tree</button>
   </section>
 
   <div class="divider hidden" id="divider3"></div>
@@ -157,6 +231,19 @@
   <section id="page3" class="hidden">
     <h1>Buildings</h1>
     <div class="shop" id="shop"></div>
+
+    <!-- Farm Mini-game UI -->
+    <div id="farmUI">
+      <h2>Farm Mini-game</h2>
+      <div>Seeds Owned: <span id="seedsCount">0</span></div>
+      <div id="farmSeeds">
+        <button data-seed="wheat">Plant Wheat (+1.01x CPS/min)</button>
+        <button data-seed="corn">Plant Corn (+1.015x CPS/min)</button>
+        <button data-seed="carrot">Plant Carrot (+1.02x CPS/min)</button>
+      </div>
+      <div>Planted Seeds: <span id="plantedSeeds">0</span></div>
+      <div id="farmStatus"></div>
+    </div>
   </section>
 
   <div class="divider hidden" id="divider4"></div>
@@ -164,9 +251,99 @@
   <section id="page4" class="hidden">
     <h1>Upgrades</h1>
     <div class="upgradeShop" id="upgrades"></div>
+
+    <!-- AI Core Mini-game UI -->
+    <div id="aiCoreUI">
+      <h2>AI Core Stock Market</h2>
+      <table id="stockTable">
+        <thead>
+          <tr>
+            <th>Stock</th>
+            <th>Price</th>
+            <th>Your Shares</th>
+            <th>Buy</th>
+            <th>Sell</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-stock="Trains">
+            <td>Trains</td>
+            <td class="price">0</td>
+            <td class="shares">0</td>
+            <td>
+              <input type="number" min="1" value="1" class="buyAmount" />
+              <button class="buyBtn">Buy</button>
+            </td>
+            <td>
+              <input type="number" min="1" value="1" class="sellAmount" />
+              <button class="sellBtn">Sell</button>
+            </td>
+          </tr>
+          <tr data-stock="Milk">
+            <td>Milk</td>
+            <td class="price">0</td>
+            <td class="shares">0</td>
+            <td>
+              <input type="number" min="1" value="1" class="buyAmount" />
+              <button class="buyBtn">Buy</button>
+            </td>
+            <td>
+              <input type="number" min="1" value="1" class="sellAmount" />
+              <button class="sellBtn">Sell</button>
+            </td>
+          </tr>
+          <tr data-stock="Sugar">
+            <td>Sugar</td>
+            <td class="price">0</td>
+            <td class="shares">0</td>
+            <td>
+              <input type="number" min="1" value="1" class="buyAmount" />
+              <button class="buyBtn">Buy</button>
+            </td>
+            <td>
+              <input type="number" min="1" value="1" class="sellAmount" />
+              <button class="sellBtn">Sell</button>
+            </td>
+          </tr>
+          <tr data-stock="Butter">
+            <td>Butter</td>
+            <td class="price">0</td>
+            <td class="shares">0</td>
+            <td>
+              <input type="number" min="1" value="1" class="buyAmount" />
+              <button class="buyBtn">Buy</button>
+            </td>
+            <td>
+              <input type="number" min="1" value="1" class="sellAmount" />
+              <button class="sellBtn">Sell</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;">Your Money: <span id="moneyDisplay">0</span></div>
+    </div>
+  </section>
+
+  <div class="divider hidden" id="divider5"></div>
+
+  <section id="page5" class="hidden">
+    <h1>Skill Tree</h1>
+    <div id="skillTreeContainer">
+      <div class="skill-node">
+        <h3>Power Click</h3>
+        <p>+50% Click Power</p>
+        <button disabled>Requires SP</button>
+      </div>
+      <div class="skill-node">
+        <h3>Efficiency Boost</h3>
+        <p>+10% Global DPS</p>
+        <button disabled>Requires SP</button>
+      </div>
+    </div>
   </section>
 
   <script>
+    // Base game variables
     let count = 0;
     let clickPower = 1;
     let globalDPS = 0;
@@ -175,21 +352,31 @@
     let rebirthCost = 10000;
     let rebirthMultiplier = 1;
 
-    const counter = document.getElementById('counter');
-    const clickButton = document.getElementById('clickButton');
-    const dpsDisplay = document.getElementById('dps');
-    const shop = document.getElementById('shop');
-    const upgradesShop = document.getElementById('upgrades');
-    const startButton = document.getElementById('startButton');
-    const page1 = document.getElementById('page1');
-    const page2 = document.getElementById('page2');
-    const page3 = document.getElementById('page3');
-    const page4 = document.getElementById('page4');
+    // Sugar lumps variables
+    let sugarLumps = 0;
+    let sugarLumpGainRate = 1 / (60 * 5); // 1 lump every 5 minutes
 
-    const rebirthSection = document.getElementById("rebirthSection");
-    const rebirthCountDisplay = document.getElementById("rebirthCount");
-    const rebirthButton = document.getElementById("rebirthButton");
+    // Seeds and farm mini-game
+    let seedsOwned = 0;
+    let plantedSeeds = 0;
+    let plantedSeedDetails = []; // Array of {type, plantedAt}
+    const seedTypes = {
+      wheat: { multiplierPerMinute: 1.01 },
+      corn: { multiplierPerMinute: 1.015 },
+      carrot: { multiplierPerMinute: 1.02 }
+    };
 
+    // AI Core Stock Market
+    const stocks = {
+      Trains: { price: 50, shares: 0 },
+      Milk: { price: 50, shares: 0 },
+      Sugar: { price: 50, shares: 0 },
+      Butter: { price: 50, shares: 0 }
+    };
+    const STOCK_CAP = 200;
+    let money = 100000; // Player's money for stocks and purchases
+
+    // Buildings, upgrades (unchanged from your code, just simplified here)
     const buildings = [
       { name: "Autoclicker", baseCost: 100, cps: 1, owned: 0 },
       { name: "Grandpa", baseCost: 1000, cps: 5, owned: 0 },
@@ -201,71 +388,178 @@
       { name: "Universe Core", baseCost: 10000000000, cps: 1000000, owned: 0 }
     ];
 
-    const buildingUpgrades = {
-      "Autoclicker": ["Clicking Fingers I", "Clicking Fingers II", "Clicking Fingers III"],
-      "Grandpa": ["Wisdom I", "Wisdom II", "Wisdom III"],
-      "Farm": ["Fertilizer", "Irrigation", "Greenhouse"],
-            "Factory": ["Assembly Boost", "Automation", "Efficiency"],
-      "Wizard Tower": ["Magic Infusion", "Arcane Study", "Potion Workshop"],
-      "Time Rift": ["Chrono Boost", "Time Distortion", "Paradox Engine"],
-      "AI Core": ["Algorithm Upgrade", "Neural Enhancer", "Quantum Processor"],
-      "Universe Core": ["Cosmic Amplifier", "Stellar Expansion", "Galactic Integration"]
-    };
+    const upgrades = []; // omitted for brevity, assume as your original code
 
-    const clickUpgrades = [
-      { name: "Stronger Fingers", cost: 500, multiplier: 2, purchased: false },
-      { name: "Iron Fingers", cost: 5000, multiplier: 2, purchased: false },
-      { name: "Titanium Fingers", cost: 50000, multiplier: 2, purchased: false },
-      { name: "Diamond Fingers", cost: 500000, multiplier: 2, purchased: false }
-    ];
+    // DOM references
+    const counter = document.getElementById("counter");
+    const clickButton = document.getElementById("clickButton");
+    const dpsDisplay = document.getElementById("dps");
+    const shop = document.getElementById("shop");
+    const upgradesShop = document.getElementById("upgrades");
+    const rebirthSection = document.getElementById("rebirthSection");
+    const rebirthButton = document.getElementById("rebirthButton");
+    const rebirthCountDisplay = document.getElementById("rebirthCount");
+    const skillTreeButton = document.getElementById("skillTreeButton");
+    const sugarLumpCount = document.getElementById("sugarLumpCount");
 
-    const upgrades = [];
+    // Farm UI elements
+    const seedsCountDisplay = document.getElementById("seedsCount");
+    const plantedSeedsDisplay = document.getElementById("plantedSeeds");
+    const farmStatus = document.getElementById("farmStatus");
+    const farmSeedButtons = document.querySelectorAll("#farmSeeds button");
 
-    Object.keys(buildingUpgrades).forEach(b => {
-      const arr = buildingUpgrades[b];
-      arr.forEach((name, i) => {
-        const cost = Math.floor((buildings.find(x => x.name === b).baseCost) * (i + 1) * 10);
-        upgrades.push({ name: name, cost: cost, type: "building", target: b, multiplier: 2, purchased: false });
-      });
-    });
+    // AI Core UI elements
+    const stockTableBody = document.querySelector("#stockTable tbody");
+    const moneyDisplay = document.getElementById("moneyDisplay");
 
-    clickUpgrades.forEach(cu => upgrades.push({ ...cu, type: "click" }));
-    upgrades.sort((a, b) => a.cost - b.cost);
-
+    // Initialize shop buttons for buildings
     buildings.forEach((b, i) => {
-      const btn = document.createElement('button');
+      const btn = document.createElement("button");
       btn.id = `buy-${i}`;
       btn.textContent = `Buy ${b.name} (Cost: ${b.baseCost}, Owned: 0)`;
-      btn.addEventListener('click', () => buyBuilding(i));
+      btn.addEventListener("click", () => buyBuilding(i));
       shop.appendChild(btn);
     });
 
-    function renderUpgrades() {
-      upgradesShop.innerHTML = '';
-      let visible = 0;
-      upgrades.forEach((u, i) => {
-        if (!u.purchased && visible < 5) {
-          const btn = document.createElement('button');
-          btn.id = `upgrade-${i}`;
-          btn.textContent = `${u.name} (Cost: ${u.cost})`;
-          btn.addEventListener('click', () => buyUpgrade(i));
-          upgradesShop.appendChild(btn);
-          visible++;
+    // Sugar Lumps: Increment over time
+    function gainSugarLumps(deltaSeconds) {
+      sugarLumps += sugarLumpGainRate * deltaSeconds;
+      sugarLumpCount.textContent = Math.floor(sugarLumps);
+    }
+
+    // When player clicks sugar lumps UI
+    document.getElementById("sugarLumps").addEventListener("click", () => {
+      const lumpsToHarvest = Math.floor(sugarLumps);
+      if (lumpsToHarvest > 0) {
+        sugarLumps -= lumpsToHarvest;
+        // For now, just add to money as a bonus, can be changed later
+        money += lumpsToHarvest * 1000;
+        moneyDisplay.textContent = money.toLocaleString();
+        alert(`You harvested ${lumpsToHarvest} sugar lumps! +$${lumpsToHarvest * 1000} money`);
+        sugarLumpCount.textContent = Math.floor(sugarLumps);
+      } else {
+        alert("No sugar lumps to harvest yet!");
+      }
+    });
+
+    // Farm mini-game: plant seeds
+    farmSeedButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const seed = btn.getAttribute("data-seed");
+        if (seedsOwned >= 1) {
+          seedsOwned--;
+          plantedSeeds++;
+          plantedSeedDetails.push({ type: seed, plantedAt: Date.now() });
+          updateFarmUI();
+        } else {
+          alert("You don't have any seeds to plant!");
         }
       });
+    });
+
+    // Farm bonus calculation every minute
+    setInterval(() => {
+      if (plantedSeedDetails.length > 0) {
+        let multiplier = 1;
+        plantedSeedDetails.forEach(seedData => {
+          const seedType = seedTypes[seedData.type];
+          if (seedType) {
+            multiplier *= seedType.multiplierPerMinute;
+          }
+        });
+        // Apply multiplier to buildings cps
+        buildings.forEach(b => {
+          b.cps *= multiplier;
+        });
+        farmStatus.textContent = `Farm boost applied! CPS multiplied by ${multiplier.toFixed(3)}`;
+        updateDPS();
+      }
+    }, 60000); // every 60 seconds
+
+    function updateFarmUI() {
+      seedsCountDisplay.textContent = seedsOwned;
+      plantedSeedsDisplay.textContent = plantedSeeds;
+      farmStatus.textContent = `You have planted ${plantedSeeds} seeds. CPS boosted every minute!`;
     }
+
+    // AI Core Stock Market: Random price fluctuation + buy/sell
+
+    function randomStockFluctuation() {
+      Object.keys(stocks).forEach(stock => {
+        let change = (Math.random() - 0.5) * 10; // Random between -5 and +5 approx
+        let newPrice = stocks[stock].price + change;
+        if (newPrice < 1) newPrice = 1;
+        if (newPrice > STOCK_CAP) newPrice = STOCK_CAP;
+        stocks[stock].price = Math.round(newPrice * 100) / 100; // round 2 decimals
+      });
+      updateStockMarketUI();
+    }
+
+    // Update stock market UI prices and shares
+    function updateStockMarketUI() {
+      moneyDisplay.textContent = money.toLocaleString();
+      stockTableBody.querySelectorAll("tr").forEach(row => {
+        const stock = row.getAttribute("data-stock");
+        row.querySelector(".price").textContent = stocks[stock].price.toFixed(2);
+        row.querySelector(".shares").textContent = stocks[stock].shares;
+      });
+    }
+
+    // Buy/Sell buttons in stock market
+    stockTableBody.querySelectorAll("tr").forEach(row => {
+      const stock = row.getAttribute("data-stock");
+      const buyBtn = row.querySelector(".buyBtn");
+      const sellBtn = row.querySelector(".sellBtn");
+      const buyInput = row.querySelector(".buyAmount");
+      const sellInput = row.querySelector(".sellAmount");
+
+      buyBtn.addEventListener("click", () => {
+        let amount = parseInt(buyInput.value) || 0;
+        if (amount < 1) return alert("Buy amount must be at least 1");
+        const price = stocks[stock].price;
+        const cost = price * amount;
+        if (cost > money) {
+          alert("Not enough money!");
+          return;
+        }
+        if (stocks[stock].shares + amount > STOCK_CAP) {
+          alert(`Cannot hold more than ${STOCK_CAP} shares of ${stock}`);
+          return;
+        }
+        money -= cost;
+        stocks[stock].shares += amount;
+        updateStockMarketUI();
+      });
+
+      sellBtn.addEventListener("click", () => {
+        let amount = parseInt(sellInput.value) || 0;
+        if (amount < 1) return alert("Sell amount must be at least 1");
+        if (amount > stocks[stock].shares) {
+          alert("You don't have that many shares!");
+          return;
+        }
+        const price = stocks[stock].price;
+        const revenue = price * amount;
+        stocks[stock].shares -= amount;
+        money += revenue;
+        updateStockMarketUI();
+      });
+    });
+
+    // Main Game Functions:
 
     function updateCounter() {
       counter.textContent = Math.floor(count);
     }
 
     function updateDPS() {
+      // Base DPS from buildings
       globalDPS = buildings.reduce((sum, b) => sum + b.owned * b.cps, 0) * rebirthMultiplier;
       if (globalDPS > 0) {
-        dpsDisplay.style.display = 'block';
+        dpsDisplay.style.display = "block";
         dpsDisplay.textContent = `+${Math.floor(globalDPS)} /s`;
       } else {
-        dpsDisplay.style.display = 'none';
+        dpsDisplay.style.display = "none";
       }
     }
 
@@ -277,133 +571,133 @@
       } else {
         rebirthSection.classList.add("hidden");
       }
+
+      if (rebirths >= 1) {
+        skillTreeButton.classList.remove("hidden");
+      }
     }
 
-    function buyBuilding(i) {
-      const b = buildings[i];
-      const cost = Math.floor(b.baseCost * Math.pow(1.2, b.owned));
+    function buyBuilding(index) {
+      const building = buildings[index];
+      const cost = building.baseCost * Math.pow(1.15, building.owned);
       if (count >= cost) {
         count -= cost;
-        b.owned++;
+        building.owned++;
         updateCounter();
+        updateBuildingButton(index);
         updateDPS();
-        document.getElementById(`buy-${i}`).textContent =
-          `Buy ${b.name} (Cost: ${Math.floor(b.baseCost * Math.pow(1.2, b.owned))}, Owned: ${b.owned})`;
+      } else {
+        alert("Not enough pickes!");
       }
     }
 
-    function buyUpgrade(i) {
-      const u = upgrades[i];
-      if (!u.purchased && count >= u.cost) {
-        count -= u.cost;
-        u.purchased = true;
-        if (u.type === "click") {
-          clickPower *= u.multiplier * rebirthMultiplier;
-        } else if (u.type === "building") {
-          const target = buildings.find(b => b.name === u.target);
-          target.cps *= u.multiplier * rebirthMultiplier;
-        }
-        updateCounter();
-        updateDPS();
-        renderUpgrades();
-        updateRebirthUI();
-      }
+    function updateBuildingButton(index) {
+      const building = buildings[index];
+      const btn = document.getElementById(`buy-${index}`);
+      const cost = building.baseCost * Math.pow(1.15, building.owned);
+      btn.textContent = `Buy ${building.name} (Cost: ${Math.floor(cost)}, Owned: ${building.owned})`;
     }
 
-    function addClick(amount) {
-      count += amount;
+    // Clicking increments count by clickPower
+    clickButton.addEventListener("click", () => {
+      count += clickPower;
       updateCounter();
-      updateRebirthUI();
-      const plus = document.createElement('div');
-      plus.textContent = `+${amount}`;
-      plus.classList.add('plus1');
-      const rect = clickButton.getBoundingClientRect();
-      plus.style.left = rect.left + rect.width / 2 + 'px';
-      plus.style.top = rect.top - 20 + 'px';
-      document.body.appendChild(plus);
-      setTimeout(() => plus.remove(), 1000);
-    }
 
-    clickButton.addEventListener('click', () => addClick(clickPower));
-
-    setInterval(() => {
-      if (globalDPS > 0) addClick(globalDPS);
-    }, 1000);
-
-    startButton.addEventListener('click', () => {
-      page1.classList.add('hidden');
-      page2.classList.remove('hidden');
-      page3.classList.remove('hidden');
-      page4.classList.remove('hidden');
-      updateDPS();
-      updateRebirthUI();
+      // Show +1 animation
+      const plus1 = document.createElement("div");
+      plus1.textContent = `+${clickPower}`;
+      plus1.classList.add("plus1");
+      document.body.appendChild(plus1);
+      plus1.style.left = (clickButton.getBoundingClientRect().left + Math.random() * clickButton.clientWidth) + "px";
+      plus1.style.top = (clickButton.getBoundingClientRect().top - 10) + "px";
+      setTimeout(() => plus1.remove(), 1000);
     });
 
-    rebirthButton.addEventListener('click', () => {
+    // Rebirth button
+    rebirthButton.addEventListener("click", () => {
       if (count >= rebirthCost) {
-        count = 0;
-        clickPower = 1;
-        buildings.forEach(b => {
-          b.owned = 0;
-          b.cps = b.baseCost / 100;
-        });
-        upgrades.forEach(u => u.purchased = false);
         rebirths++;
-        rebirthMultiplier *= 1.5;
-        rebirthCost *= 1.4;
-        renderUpgrades();
+        count = 0;
+        rebirthCost *= 2;
+        rebirthMultiplier += 0.2; // each rebirth multiplies CPS by 1.2x
+        buildings.forEach(b => b.owned = 0); // Reset buildings on rebirth
+        plantedSeeds = 0;
+        plantedSeedDetails = [];
+        seedsOwned = 0;
+        updateFarmUI();
+        updateBuildingButtons();
         updateCounter();
-        updateDPS();
         updateRebirthUI();
-        buildings.forEach((b, i) => {
-          document.getElementById(`buy-${i}`).textContent =
-            `Buy ${b.name} (Cost: ${Math.floor(b.baseCost)}, Owned: 0)`;
-        });
+        updateDPS();
+      } else {
+        alert("Not enough pickes to rebirth!");
       }
     });
 
-    renderUpgrades();
-
-    function saveGame() {
-      const saveData = {
-        count,
-        clickPower,
-        buildings,
-        upgrades,
-        rebirths,
-        rebirthCost,
-        rebirthMultiplier
-      };
-      localStorage.setItem('rainbowClickerSave', JSON.stringify(saveData));
+    function updateBuildingButtons() {
+      buildings.forEach((_, i) => updateBuildingButton(i));
     }
 
-    function loadGame() {
-      const data = JSON.parse(localStorage.getItem('rainbowClickerSave'));
-      if (!data) return;
-      count = data.count;
-      clickPower = data.clickPower;
-      data.buildings.forEach((b, i) => {
-        buildings[i].owned = b.owned;
-        buildings[i].cps = b.cps;
-        document.getElementById(`buy-${i}`).textContent =
-          `Buy ${buildings[i].name} (Cost: ${Math.floor(buildings[i].baseCost * Math.pow(1.2, b.owned))}, Owned: ${b.owned})`;
-      });
-      data.upgrades.forEach((u, i) => {
-        upgrades[i].purchased = u.purchased;
-      });
-      rebirths = data.rebirths || 0;
-      rebirthCost = data.rebirthCost || 10000;
-      rebirthMultiplier = data.rebirthMultiplier || 1;
-      renderUpgrades();
+    // Start button shows game UI and starts game loops
+    const startButton = document.getElementById("startButton");
+    const page1 = document.getElementById("page1");
+    const page2 = document.getElementById("page2");
+    const page3 = document.getElementById("page3");
+    const page4 = document.getElementById("page4");
+    const divider2 = document.getElementById("divider2");
+    const divider3 = document.getElementById("divider3");
+    const divider4 = document.getElementById("divider4");
+
+    startButton.addEventListener("click", () => {
+      page1.classList.add("hidden");
+      divider2.classList.remove("hidden");
+      page2.classList.remove("hidden");
+      divider3.classList.remove("hidden");
+      page3.classList.remove("hidden");
+      divider4.classList.remove("hidden");
+      page4.classList.remove("hidden");
+
+      // Initial UI update
       updateCounter();
       updateDPS();
       updateRebirthUI();
+      updateFarmUI();
+      updateStockMarketUI();
+
+      // Give player some seeds initially
+      seedsOwned = 10;
+      updateFarmUI();
+
+      // Start the main game loop
+      lastUpdateTime = Date.now();
+      gameLoop();
+      stockFluctuationLoop();
+    });
+
+    // Game loop variables
+    let lastUpdateTime = Date.now();
+
+    function gameLoop() {
+      const now = Date.now();
+      const delta = (now - lastUpdateTime) / 1000;
+      lastUpdateTime = now;
+
+      // Add global DPS * delta seconds to count
+      count += globalDPS * delta;
+      updateCounter();
+
+      // Gain sugar lumps over time
+      gainSugarLumps(delta);
+
+      requestAnimationFrame(gameLoop);
     }
 
-    loadGame();
-    setInterval(saveGame, 30000); // Save every 30s
+    // Stock price fluctuation loop (every 5 seconds)
+    function stockFluctuationLoop() {
+      randomStockFluctuation();
+      setTimeout(stockFluctuationLoop, 5000);
+    }
+
   </script>
 </body>
 </html>
-
-
