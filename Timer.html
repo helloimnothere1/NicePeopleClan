@@ -23,6 +23,7 @@
       border: 10px solid red;
       animation: rainbowBorder 5s linear infinite;
       overflow: hidden;
+      position: relative;
     }
 
     @keyframes rainbowBorder {
@@ -127,15 +128,6 @@
       background-color: rgba(255, 255, 255, 0.25);
     }
 
-    /* Fullscreen background wallpaper */
-    .fullscreen-background {
-      background-image: url("https://cdn.wallpapersafari.com/48/37/9JD7WQ.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-
-    /* Enlarged text when in fullscreen */
     .fullscreen-mode h1 {
       font-size: 3.5rem;
     }
@@ -154,6 +146,37 @@
       width: 70px;
     }
 
+    /* Pseudo-fullscreen */
+    .pseudo-fullscreen {
+      position: absolute !important;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      background-image: url("https://cdn.wallpapersafari.com/48/37/9JD7WQ.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .pseudo-fullscreen h1 {
+      font-size: 3.5rem;
+    }
+
+    .pseudo-fullscreen .display {
+      font-size: 3rem;
+    }
+
+    .pseudo-fullscreen button {
+      font-size: 1.5rem;
+      padding: 12px 24px;
+    }
+
+    .pseudo-fullscreen input[type="number"] {
+      font-size: 1.2rem;
+      width: 70px;
+    }
   </style>
 </head>
 <body>
@@ -284,31 +307,32 @@
       countdownDisplay.textContent = `${min}:${sec}`;
     }
 
-    // Fullscreen toggle
+    // Pseudo-fullscreen toggle
     function toggleFullscreen(id, button) {
       const element = document.getElementById(id);
-      if (!document.fullscreenElement) {
-        element.requestFullscreen().then(() => {
-          button.textContent = "❌ Exit Fullscreen";
-          element.classList.add('fullscreen-background', 'fullscreen-mode');
+      const isFullscreen = element.classList.contains('pseudo-fullscreen');
+
+      if (!isFullscreen) {
+        // Hide all other grid cells
+        document.querySelectorAll('.grid-cell').forEach(el => {
+          if (el.id !== id) {
+            el.style.display = 'none';
+          }
         });
+
+        // Expand the clicked cell
+        element.classList.add('pseudo-fullscreen');
+        button.textContent = "❌ Exit Fullscreen";
       } else {
-        document.exitFullscreen().then(() => {
-          button.textContent = "🔲 Fullscreen";
-          document.querySelectorAll('.grid-cell').forEach(el => el.classList.remove('fullscreen-background', 'fullscreen-mode'));
+        // Restore all grid cells
+        document.querySelectorAll('.grid-cell').forEach(el => {
+          el.style.display = 'flex';
+          el.classList.remove('pseudo-fullscreen');
         });
+
+        button.textContent = "🔲 Fullscreen";
       }
     }
-
-    // Exit fullscreen cleanup
-    document.addEventListener("fullscreenchange", () => {
-      if (!document.fullscreenElement) {
-        document.querySelectorAll('.fullscreen-btn').forEach(btn => {
-          btn.textContent = "🔲 Fullscreen";
-        });
-        document.querySelectorAll('.grid-cell').forEach(el => el.classList.remove('fullscreen-background', 'fullscreen-mode'));
-      }
-    });
   </script>
 
 </body>
