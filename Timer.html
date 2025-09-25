@@ -27,22 +27,22 @@
     }
 
     @keyframes rainbowBorder {
-      0%   { border-color: red; }
-      16.6%  { border-color: orange; }
-      33.3%  { border-color: yellow; }
-      50%  { border-color: green; }
-      66.6%  { border-color: blue; }
-      83.3%  { border-color: indigo; }
+      0% { border-color: red; }
+      16.6% { border-color: orange; }
+      33.3% { border-color: yellow; }
+      50% { border-color: green; }
+      66.6% { border-color: blue; }
+      83.3% { border-color: indigo; }
       100% { border-color: red; }
     }
 
     @keyframes rainbowText {
-      0%   { color: red; }
-      16.6%  { color: orange; }
-      33.3%  { color: yellow; }
-      50%  { color: green; }
-      66.6%  { color: blue; }
-      83.3%  { color: indigo; }
+      0% { color: red; }
+      16.6% { color: orange; }
+      33.3% { color: yellow; }
+      50% { color: green; }
+      66.6% { color: blue; }
+      83.3% { color: indigo; }
       100% { color: red; }
     }
 
@@ -128,25 +128,7 @@
       background-color: rgba(255, 255, 255, 0.25);
     }
 
-    .fullscreen-mode h1 {
-      font-size: 3.5rem;
-    }
-
-    .fullscreen-mode .display {
-      font-size: 3rem;
-    }
-
-    .fullscreen-mode button {
-      font-size: 1.5rem;
-      padding: 12px 24px;
-    }
-
-    .fullscreen-mode input[type="number"] {
-      font-size: 1.2rem;
-      width: 70px;
-    }
-
-    /* Pseudo-fullscreen */
+    /* Pseudo-fullscreen styles */
     .pseudo-fullscreen {
       position: absolute !important;
       top: 0;
@@ -158,25 +140,31 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
     }
 
     .pseudo-fullscreen h1 {
-      font-size: 3.5rem;
+      font-size: 3vw;
+      margin-bottom: 2vh;
     }
 
     .pseudo-fullscreen .display {
-      font-size: 3rem;
+      font-size: 6vw;
     }
 
-    .pseudo-fullscreen button {
-      font-size: 1.5rem;
-      padding: 12px 24px;
+    /* Special responsive resizing for Real Time panel */
+    #top-left.pseudo-fullscreen h1 {
+      font-size: 6vw;
     }
 
-    .pseudo-fullscreen input[type="number"] {
-      font-size: 1.2rem;
-      width: 70px;
+    #top-left.pseudo-fullscreen .display {
+      font-size: 10vw;
     }
+
   </style>
 </head>
 <body>
@@ -307,24 +295,21 @@
       countdownDisplay.textContent = `${min}:${sec}`;
     }
 
-    // Pseudo-fullscreen toggle
+    // Pseudo fullscreen toggle
     function toggleFullscreen(id, button) {
       const element = document.getElementById(id);
       const isFullscreen = element.classList.contains('pseudo-fullscreen');
 
       if (!isFullscreen) {
-        // Hide all other grid cells
         document.querySelectorAll('.grid-cell').forEach(el => {
           if (el.id !== id) {
             el.style.display = 'none';
           }
         });
 
-        // Expand the clicked cell
         element.classList.add('pseudo-fullscreen');
         button.textContent = "❌ Exit Fullscreen";
       } else {
-        // Restore all grid cells
         document.querySelectorAll('.grid-cell').forEach(el => {
           el.style.display = 'flex';
           el.classList.remove('pseudo-fullscreen');
