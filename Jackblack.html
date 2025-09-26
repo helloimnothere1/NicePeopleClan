@@ -42,7 +42,7 @@
     }
 
     .card.back::after {
-      content: '🂠';  /* card back emoji */
+      content: '🂠';
       position: absolute;
       top: 50%;
       left: 50%;
@@ -51,7 +51,6 @@
       color: white;
     }
 
-    /* Flip animation only for dealer's second card */
     .card.flipping {
       transform-style: preserve-3d;
       perspective: 600px;
@@ -96,7 +95,6 @@
       color: transparent;
     }
 
-    /* Slide in animation */
     @keyframes slideIn {
       from {
         transform: translateY(-80px);
@@ -126,10 +124,25 @@
     button:hover {
       background: #444;
     }
+
+    input[type="number"] {
+      font-size: 1rem;
+      padding: 5px;
+      border-radius: 4px;
+      width: 60px;
+      border: none;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
   <h1>Blackjack Demo</h1>
+
+  <p>Bits: <span id="bits">100</span></p>
+  <p>
+    Bet:
+    <input type="number" id="bet-amount" value="10" min="1" />
+  </p>
 
   <div>
     <h2>Your Hand (<span id="player-score">0</span>):</h2>
@@ -156,6 +169,7 @@
     let deck, playerHand, dealerHand;
     let gameOver = false;
     let revealDealerSecondCard = false;
+    let bits = 100;
 
     function createDeck() {
       const newDeck = [];
@@ -164,13 +178,12 @@
           newDeck.push({ suit, value });
         }
       }
-      // shuffle deck
       return newDeck.sort(() => Math.random() - 0.5);
     }
 
     function getCardValue(card) {
       if (card.value === 'A') return 11;
-      if (['J','Q','K'].includes(card.value)) return 10;
+      if (['J', 'Q', 'K'].includes(card.value)) return 10;
       return Number(card.value);
     }
 
@@ -194,9 +207,7 @@
     }
 
     function createCardElement(card, isDealer = false, index = 0) {
-      // For dealer's second card - face down until reveal
       if (isDealer && index === 1 && !revealDealerSecondCard) {
-        // Create flipping card container
         const cardEl = document.createElement('div');
         cardEl.classList.add('card', 'flipping');
 
@@ -218,7 +229,6 @@
         return cardEl;
       }
 
-      // Otherwise normal card (just slide in)
       const cardEl = document.createElement('div');
       cardEl.classList.add('card');
       cardEl.textContent = `${card.value}${card.suit}`;
@@ -258,7 +268,6 @@
       revealDealerSecondCard = true;
       displayHands();
       flipDealerSecondCard();
-
       await delay(1000);
 
       while (calculateScore(dealerHand) < 17) {
@@ -266,48 +275,68 @@
         displayHands();
         await delay(1000);
       }
+
       checkWinner();
+    }
+
+    function getCurrentBet() {
+      const input = document.getElementById('bet-amount');
+      let bet = parseInt(input.value);
+      if (isNaN(bet) || bet < 1) bet = 1;
+      if (bet > bits) bet = bits;
+      input.value = bet;
+      return bet;
+    }
+
+    function updateBitsDisplay() {
+      document.getElementById('bits').textContent = bits;
     }
 
     function checkWinner() {
       const playerScore = calculateScore(playerHand);
       const dealerScore = calculateScore(dealerHand);
       const status = document.getElementById('status');
+      const bet = getCurrentBet();
 
       if (playerScore > 21) {
         status.textContent = 'You busted! Dealer wins!';
         gameOver = true;
+        bits -= bet;
         revealDealerSecondCard = true;
         displayHands();
         flipDealerSecondCard();
       } else if (dealerScore > 21) {
         status.textContent = 'Dealer busted! You win!';
         gameOver = true;
+        bits += bet;
       } else if (gameOver) {
         if (playerScore > dealerScore) {
           status.textContent = 'You win!';
+          bits += bet;
         } else if (dealerScore > playerScore) {
           status.textContent = 'Dealer wins!';
+          bits -= bet;
         } else {
           status.textContent = 'Push! Tie game!';
         }
       }
+
+      updateBitsDisplay();
     }
 
     function delay(ms) {
       return new Promise(res => setTimeout(res, ms));
     }
 
-    // Buttons
     document.getElementById('hitBtn').onclick = () => {
-      if (gameOver) return;
+      if (gameOver || bits <= 0) return;
       dealCard(playerHand);
       displayHands();
       checkWinner();
     };
 
     document.getElementById('standBtn').onclick = async () => {
-      if (gameOver) return;
+      if (gameOver || bits <= 0) return;
       gameOver = true;
       await dealerPlay();
     };
@@ -320,16 +349,16 @@
       revealDealerSecondCard = false;
       document.getElementById('status').textContent = '';
 
-      // initial deal: player, dealer, player, dealer
       dealCard(playerHand);
       dealCard(dealerHand);
       dealCard(playerHand);
       dealCard(dealerHand);
 
       displayHands();
+      updateBitsDisplay();
     };
 
-    // auto start game on page load
+    // Start game on load
     document.getElementById('resetBtn').click();
   </script>
 </body>
