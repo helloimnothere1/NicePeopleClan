@@ -12,7 +12,7 @@
     html, body {
       height: 400vh;
       font-family: Arial, sans-serif;
-      background-color: #000; /* ✅ Solid black background */
+      background-color: #000;
     }
 
     body {
@@ -24,33 +24,43 @@
       animation: rainbowBorder 5s linear infinite;
       overflow-y: scroll;
 
-      scrollbar-width: none;        /* Firefox */
-      -ms-overflow-style: none;    /* IE and Edge */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
     body::-webkit-scrollbar {
-      display: none;               /* Chrome, Safari */
+      display: none;
     }
 
     section {
       height: 100vh;
       width: 100%;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      position: relative;
       gap: 30px;
-      background-color: #000; /* ✅ Also force section background to black */
+      background-color: #000;
     }
 
     h1 {
       font-size: 5rem;
       animation: rainbowText 5s linear infinite;
       user-select: none;
+      text-align: center;
     }
 
-    /* Rainbow button style */
+    /* Grid layout for buttons */
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      width: 80%;
+      max-width: 1000px;
+      justify-items: center;
+    }
+
+    /* Button styles */
     .clicker-button {
       display: inline-block;
       padding: 15px 40px;
@@ -64,6 +74,7 @@
       cursor: pointer;
       animation: rainbowBorder 5s linear infinite;
       transition: transform 0.2s ease-in-out, background 0.2s;
+      text-align: center;
     }
 
     .clicker-button:hover {
@@ -98,37 +109,22 @@
   <section>
     <h1>nuh uh</h1>
   </section>
+
   <section>
     <h1>yuh huh lil bro</h1>
 
-  <!-- Clicker Game button -->
-  <a href="clicker.html" class="clicker-button">Clicker Game</a>
-
-  <!-- Aim Trainer Game button -->
-  <a href="aim training.html" class="clicker-button">Aim Trainer Game</a>
-
-     <!-- Bee movie script button lol -->
-  <a href="BEE.html" class="clicker-button">bee the bee</a>
-
-  <!-- Jack Black button -->
-  <a href="Jackblack.html" class="clicker-button">Jack Black</a>
-
-    <!-- givin u up -->
-  <a href="give you up.html" class="clicker-button">give you up</a>
-
-<!-- Timer button -->
-<a href="Timer.html" class="clicker-button">Timer</a>
-   
-<!-- Cookie Clicker button -->
-<a href="game53.zip" class="clicker-button">Cookie Clicker</a>
-
-<!--Dogeclicker button -->
-<a href="game70.zip" class="clicker-button">Dogeclicker</a>    
-
-    <!-- 10 mins tell dawn -->
-<a href="min.html" class="clicker-button">10 Mins</a>   
-  
+    <!-- ✅ Wrap all buttons inside a grid container -->
+    <div class="button-grid">
+      <a href="clicker.html" class="clicker-button">Clicker Game</a>
+      <a href="aim training.html" class="clicker-button">Aim Trainer Game</a>
+      <a href="BEE.html" class="clicker-button">bee the bee</a>
+      <a href="Jackblack.html" class="clicker-button">Jack Black</a>
+      <a href="give you up.html" class="clicker-button">give you up</a>
+      <a href="Timer.html" class="clicker-button">Timer</a>
+      <a href="game53.zip" class="clicker-button">Cookie Clicker</a>
+      <a href="game70.zip" class="clicker-button">Dogeclicker</a>
+      <a href="min.html" class="clicker-button">10 Mins</a>
+    </div>
   </section>
-</section>
 </body>
 </html>
