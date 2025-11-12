@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Black ↔ White Flicker</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background-color: black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: sans-serif;
+      transition: background-color 0.05s linear; /* smoothen transitions */
+    }
+
+    input[type="range"] {
+      width: 300px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Black ↔ White Flicker</h1>
+  <p>Speed: <span id="speedValue">60</span> changes/second</p>
+  <input type="range" id="speedControl" min="1" max="120" value="60">
+
+  <script>
+    let isBlack = true;
+    let speed = 60; // initial flicker rate (per second)
+    const speedDisplay = document.getElementById('speedValue');
+    const slider = document.getElementById('speedControl');
+
+    // Update speed when slider moves
+    slider.addEventListener('input', () => {
+      speed = parseInt(slider.value);
+      speedDisplay.textContent = speed;
+      restartFlicker();
+    });
+
+    let flickerInterval;
+
+    function startFlicker() {
+      flickerInterval = setInterval(() => {
+        document.body.style.backgroundColor = isBlack ? 'white' : 'black';
+        document.body.style.color = isBlack ? 'black' : 'white';
+        isBlack = !isBlack;
+      }, 1000 / speed);
+    }
+
+    function restartFlicker() {
+      clearInterval(flickerInterval);
+      startFlicker();
+    }
+
+    startFlicker();
+  </script>
+</body>
+</html>
