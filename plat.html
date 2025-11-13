@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parkour Game</title>
+<style>
+body { margin: 0; overflow: hidden; background: #aee1f9; }
+canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const groundHeight = 60;
+const headImg = new Image();
+headImg.src = "https://bluemoji.io/cdn-proxy/646218c67da47160c64a84d5/66b3ea1dcffcb68152a70549_50.png";
+
+// Player
+const player = {
+  x: 50, y: 0, width: 20, height: 50,
+  velX: 0, velY: 0, onGround: false,
+  legOffset: 0, legDirection: 1
+};
+
+const gravity = 0.8, friction = 0.8, moveSpeed = 5, jumpStrength = -16, legLength = 20;
+
+let cameraX = 0, cameraY = 0;
+let keys = {};
+let showHitboxes = false;
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  keys[k] = true;
+  if (k === "p") showHitboxes = !showHitboxes;
+});
+document.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
+
+let blocks = [];
+
+function generateBlocks() {
+  blocks = [];
+  const startX = 150, startY = canvas.height - groundHeight - player.height - legLength;
+  let lastX = startX, lastY = startY;
+  const minVert = 40, maxVert = 100;
+  const minHorz = 120, maxHorz = 200;
+  const totalBlocks = 30;
+
+  for (let i = 0; i < totalBlocks; i++) {
+    const dir = Math.random() < 0.5 ? -1 : 1;
+    let x = lastX + dir * (minHorz + Math.random() * (maxHorz - minHorz));
+    let y = lastY - (minVert + Math.random() * (maxVert - minVert));
+    const maxStepUp = 120;
+    if (y < lastY - maxStepUp) y = lastY - maxStepUp;
+
+    let obstacleType = 0, spikeCount = 0;
+    if (Math.random() < 0.25) {
+      obstacleType = Math.floor(Math.random() * 2) + 1;
+      if (obstacleType === 1) spikeCount = Math.floor(Math.random() * 2) + 1;
+    }
+
+    blocks.push({ x, y, width: 100, height: 20, obstacle: obstacleType, spikes: spikeCount });
+    lastX = x;
+    lastY = y;
+  }
+
+  resetPlayer();
+}
+
+function resetPlayer() {
+  player.x = 50;
+  player.y = canvas.height - groundHeight - player.height - legLength;
+  player.velX = 0;
+  player.velY = 0;
+  player.onGround = false;
+}
+
+function drawStickman(p) {
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = 3;
+  const headSize = 20;
+  const headX = p.x + p.width / 2 - headSize / 2;
+  const headY = p.y;
+
+  if (headImg.complete) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(p.x + p.width / 2, p.y + 10, headSize / 2, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(headImg, headX, headY, headSize, headSize);
+    ctx.restore();
+    ctx.beginPath();
+    ctx.arc(p.x + p.width / 2, p.y + 10, headSize / 2, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // body
+  ctx.beginPath();
+  ctx.moveTo(p.x + p.width / 2, p.y + 20);
+  ctx.lineTo(p.x + p.width / 2, p.y + 50);
+  ctx.stroke();
+
+  // arms
+  ctx.beginPath();
+  ctx.moveTo(p.x + p.width / 2, p.y + 25);
+  ctx.lineTo(p.x - 10, p.y + 35);
+  ctx.moveTo(p.x + p.width / 2, p.y + 25);
+  ctx.lineTo(p.x + p.width + 10, p.y + 35);
+  ctx.stroke();
+
+  // legs
+  ctx.beginPath();
+  ctx.moveTo(p.x + p.width / 2, p.y + 50);
+  ctx.lineTo(p.x - 10, p.y + 50 + legLength + p.legOffset);
+  ctx.moveTo(p.x + p.width / 2, p.y + 50);
+  ctx.lineTo(p.x + p.width + 10, p.y + 50 + legLength - p.legOffset);
+  ctx.stroke();
+
+  if (showHitboxes) {
+    ctx.strokeStyle = "green";
+    ctx.strokeRect(p.x, p.y, p.width, p.height + legLength);
+  }
+}
+
+function update() {
+  if (keys["a"]) player.velX = -moveSpeed;
+  else if (keys["d"]) player.velX = moveSpeed;
+  else player.velX *= friction;
+
+  if (keys["w"] && player.onGround) {
+    player.velY = jumpStrength;
+    player.onGround = false;
+  }
+
+  player.velY += gravity;
+  player.x += player.velX;
+  player.y += player.velY;
+  player.onGround = false;
+
+  const playerBottom = player.y + player.height + legLength;
+  const groundY = canvas.height - groundHeight;
+
+  if (playerBottom >= groundY) {
+    player.y = groundY - player.height - legLength;
+    player.velY = 0;
+    player.onGround = true;
+  }
+
+  let endReached = false;
+
+  blocks.forEach(block => {
+    // Block collision (top)
+    if (player.velY >= 0 &&
+        player.x + player.width > block.x &&
+        player.x < block.x + block.width &&
+        playerBottom >= block.y &&
+        player.y + player.height <= block.y + block.height + Math.abs(player.velY)) {
+
+      player.y = block.y - player.height - legLength;
+      player.velY = 0;
+      player.onGround = true;
+
+      if (block.obstacle === 2) player.velY = jumpStrength * 1.5; // trampoline
+    }
+
+    // Spikes collision
+    if (block.obstacle === 1) {
+      for (let i = 0; i < block.spikes; i++) {
+        const spikeX = block.x + i * 30;
+        const spikeY = block.y - 15;
+        const spikeW = 30, spikeH = 15;
+
+        if (player.x + player.width > spikeX &&
+            player.x < spikeX + spikeW &&
+            playerBottom > spikeY &&
+            player.y < spikeY + spikeH) {
+          resetPlayer();
+        }
+      }
+    }
+
+    if (block === blocks[blocks.length - 1] && player.x > block.x + block.width)
+      endReached = true;
+  });
+
+  if ((keys["a"] || keys["d"]) && player.onGround) {
+    player.legOffset += player.legDirection * 0.3;
+    if (player.legOffset > 5 || player.legOffset < -5) player.legDirection *= -1;
+  } else player.legOffset = 0;
+
+  if (endReached) generateBlocks();
+
+  cameraX += ((player.x - canvas.width / 2 + player.width / 2) - cameraX) * 0.1;
+  cameraY += ((player.y - canvas.height / 2 + player.height / 2) - cameraY) * 0.1;
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.translate(-cameraX, -cameraY);
+
+  // Ground
+  ctx.fillStyle = "#3ca047";
+  ctx.fillRect(0, canvas.height - groundHeight, canvas.width * 10, groundHeight);
+
+  // Blocks
+  blocks.forEach(b => {
+    ctx.fillStyle = "#ff7f00";
+    ctx.fillRect(b.x, b.y, b.width, b.height);
+    if (showHitboxes) {
+      ctx.strokeStyle = "green";
+      ctx.strokeRect(b.x, b.y, b.width, b.height);
+    }
+
+    // Obstacles
+    if (b.obstacle === 1) { // spikes
+      ctx.fillStyle = "red";
+      for (let i = 0; i < b.spikes; i++) {
+        const baseX = b.x + i * 30;
+        const baseY = b.y;
+        ctx.beginPath();
+        ctx.moveTo(baseX, baseY);
+        ctx.lineTo(baseX + 15, baseY - 15);
+        ctx.lineTo(baseX + 30, baseY);
+        ctx.closePath();
+        ctx.fill();
+        if (showHitboxes) ctx.strokeRect(baseX, baseY - 15, 30, 15);
+      }
+    } else if (b.obstacle === 2) { // trampoline
+      ctx.fillStyle = "blue";
+      ctx.fillRect(b.x + 20, b.y - 10, 60, 10);
+      if (showHitboxes) ctx.strokeRect(b.x + 20, b.y - 10, 60, 10);
+    }
+  });
+
+  drawStickman(player);
+  ctx.restore();
+}
+
+function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+generateBlocks();
+loop();
+
+document.addEventListener("keydown", e => {
+  if (e.key.toLowerCase() === "r") generateBlocks();
+});
+</script>
+</body>
+</html>
