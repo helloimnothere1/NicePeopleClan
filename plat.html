@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -20,6 +19,9 @@ canvas.height = window.innerHeight;
 const groundHeight = 60;
 const headImg = new Image();
 headImg.src = "https://bluemoji.io/cdn-proxy/646218c67da47160c64a84d5/66b3ea1dcffcb68152a70549_50.png";
+
+const flagImg = new Image();
+flagImg.src = "https://dejpknyizje2n.cloudfront.net/media/carstickers/versions/checkered-racing-flag-sticker-uda6e-6ec2-x450.png";
 
 // Player
 const player = {
@@ -67,6 +69,12 @@ function generateBlocks() {
     lastX = x;
     lastY = y;
   }
+
+  // Make last block green with flag
+  blocks[blocks.length - 1].width = 100;
+  blocks[blocks.length - 1].height = 20;
+  blocks[blocks.length - 1].obstacle = 0;
+  blocks[blocks.length - 1].isFinish = true;
 
   resetPlayer();
 }
@@ -153,7 +161,6 @@ function update() {
   let endReached = false;
 
   blocks.forEach(block => {
-    // Block collision (top)
     if (player.velY >= 0 &&
         player.x + player.width > block.x &&
         player.x < block.x + block.width &&
@@ -164,10 +171,9 @@ function update() {
       player.velY = 0;
       player.onGround = true;
 
-      if (block.obstacle === 2) player.velY = jumpStrength * 1.5; // trampoline
+      if (block.obstacle === 2) player.velY = jumpStrength * 1.5;
     }
 
-    // Spikes collision
     if (block.obstacle === 1) {
       for (let i = 0; i < block.spikes; i++) {
         const spikeX = block.x + i * 30;
@@ -183,8 +189,7 @@ function update() {
       }
     }
 
-    if (block === blocks[blocks.length - 1] && player.x > block.x + block.width)
-      endReached = true;
+    if (block.isFinish && player.x > block.x + block.width) endReached = true;
   });
 
   if ((keys["a"] || keys["d"]) && player.onGround) {
@@ -203,21 +208,22 @@ function draw() {
   ctx.save();
   ctx.translate(-cameraX, -cameraY);
 
-  // Ground
+  // Infinite green ground
   ctx.fillStyle = "#3ca047";
-  ctx.fillRect(0, canvas.height - groundHeight, canvas.width * 10, groundHeight);
+  ctx.fillRect(-10000, canvas.height - groundHeight, 20000, groundHeight);
 
   // Blocks
   blocks.forEach(b => {
-    ctx.fillStyle = "#ff7f00";
+    ctx.fillStyle = b.isFinish ? "green" : "#ff7f00";
     ctx.fillRect(b.x, b.y, b.width, b.height);
-    if (showHitboxes) {
-      ctx.strokeStyle = "green";
-      ctx.strokeRect(b.x, b.y, b.width, b.height);
+
+    if (b.isFinish && flagImg.complete) {
+      ctx.drawImage(flagImg, b.x + b.width / 2 - 25, b.y - 40, 50, 40);
     }
 
-    // Obstacles
-    if (b.obstacle === 1) { // spikes
+    if (showHitboxes) ctx.strokeRect(b.x, b.y, b.width, b.height);
+
+    if (b.obstacle === 1) {
       ctx.fillStyle = "red";
       for (let i = 0; i < b.spikes; i++) {
         const baseX = b.x + i * 30;
@@ -230,7 +236,7 @@ function draw() {
         ctx.fill();
         if (showHitboxes) ctx.strokeRect(baseX, baseY - 15, 30, 15);
       }
-    } else if (b.obstacle === 2) { // trampoline
+    } else if (b.obstacle === 2) {
       ctx.fillStyle = "blue";
       ctx.fillRect(b.x + 20, b.y - 10, 60, 10);
       if (showHitboxes) ctx.strokeRect(b.x + 20, b.y - 10, 60, 10);
